@@ -1,4 +1,4 @@
-// 1.6 Unicafe
+// 1.7 Unicafe
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
@@ -8,6 +8,24 @@ const Button = (props) => {
 
 const Display = (props) => {
     return <p>{props.text} {props.value}</p>
+}
+
+const sumValues = ([good, neutral, bad]) => {
+    return good + neutral + bad
+}
+
+const positivePercentage = (table) => {
+    const sum = sumValues(table)
+    if (sum > 0) return table[0]/sum * 100
+    return "-"
+}
+
+const averageValue = (table) => {
+    const sum = sumValues(table)
+    if (sum > 0) {
+        return (table[0]*1 + table[1]*0 + table[2]*(-1))/sum
+    }
+    return 0
 }
 
 const App = () => {
@@ -38,6 +56,9 @@ const App = () => {
       <Display text="good" value={good} />
       <Display text="neutral" value={neutral} />
       <Display text="bad" value={bad} />
+      <Display text="all" value={sumValues([good, neutral, bad])} />
+      <Display text="average" value={averageValue([good, neutral, bad])} />
+      <p>positive {positivePercentage([good, neutral, bad])} %</p>
     </div>
   )
 }
