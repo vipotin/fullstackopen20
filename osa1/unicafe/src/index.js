@@ -1,9 +1,13 @@
-// 1.9 Unicafe
+// 1.10 Unicafe
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 const Button = (props) => {
     return <button onClick={props.handleClick}>{props.text}</button>
+}
+
+const StatisticLine = (props) => {
+    return <p>{props.text} {props.value}</p>
 }
 
 const Statistics = (props) => {
@@ -23,8 +27,7 @@ const Statistics = (props) => {
     }
     const positivePercentage = ({good, neutral, bad}) => {
         const sum = sumValues({good, neutral, bad})
-        if (sum > 0) return good/sum * 100
-        return "-"
+        return good/sum * 100 + " %"
     }
 
     // Check if there are no feedback
@@ -38,15 +41,15 @@ const Statistics = (props) => {
     }
 
     return(
-        <>
+        <div>
             <h1>statistics</h1>
-            <p>good {good}</p>
-            <p>neutral {neutral}</p>
-            <p>bad {bad}</p>
-            <p>all {sumValues({good, neutral, bad})}</p>
-            <p>average {averageValue({good, neutral, bad})}</p>
-            <p>positive {positivePercentage({good, neutral, bad})} %</p>
-        </>
+            <StatisticLine text="good" value ={good} />
+            <StatisticLine text="neutral" value ={neutral} />
+            <StatisticLine text="bad" value ={bad} />
+            <StatisticLine text="all" value={sumValues({good, neutral, bad})} />
+            <StatisticLine text="average" value={averageValue({good, neutral, bad})} />
+            <StatisticLine text="positive" value={positivePercentage({good, neutral, bad})} unit="%" />
+        </div>
         )
 }
 
