@@ -1,4 +1,4 @@
-// 1.12* Anekdootit
+// 1.14* Anekdootit
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
@@ -23,15 +23,46 @@ const App = (props) => {
 
     const setToSelected = (newValue) => {
         setSelected(newValue)
-        console.log(newValue)
     }
-  
+    //const [votes, setVotes] = useState()
+    const [voteData, setVoteData] = useState({
+        votes: new Uint8Array(6),
+        mostVoted: 0
+    })
+
+    const addVote = () => {
+        const newVotes = [...voteData.votes]
+        newVotes[selected] += 1
+
+        let newValue = voteData.mostVoted        
+        // Find the most voted item
+        for (let step = 0; step < newVotes.length; step++) {
+            if (newVotes[step] > newVotes[newValue]) {
+                newValue = step
+            }  
+        }
+        setVoteData({
+            votes: newVotes,
+            mostVoted: newValue
+        })
+    }
+
     return (
         <div>
+            <h1>Anecdote of the day</h1>
             <div>
             {anecdotes[selected]}
             </div>
+            <div>
+                has {voteData.votes[selected]} votes
+            </div>
+            <Button handleClick={() => addVote()} text="vote"/>
             <Button handleClick={() => setToSelected(randomGenerator(anecdotes.length))} text="change"/>
+            <h1>Anecdote with the most votes</h1>
+            <div>{anecdotes[voteData.mostVoted]}</div>
+            <div>
+                has {voteData.votes[voteData.mostVoted]} votes
+            </div>
         </div>
     )
   }
