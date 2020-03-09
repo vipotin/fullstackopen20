@@ -1,4 +1,4 @@
-// 2.2 Kurssitiedot
+// 2.4 kurssitiedot
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -7,9 +7,7 @@ const Header = ({name}) => {
     return <h1>{name}</h1>
 }
 
-const Part = ({part, exercises, id}) => {
-    return <p>{part} {exercises}</p>
-}
+const Part = ({part, exercises}) => <p>{part} {exercises}</p>
 
 const Total = ({list}) => {
     return <p><b>total of {list.reduce((sum, value) => (sum + value))} exercises</b></p>
@@ -28,7 +26,8 @@ const Course = ({course}) => {
 }
 
 const App = () => {
-    const course = {
+    const courses = [
+      {
         name: 'Half Stack application development',
         id: 1,
         parts: [
@@ -53,12 +52,29 @@ const App = () => {
             id: 4
           }
         ]
-      }  
-
+      }, 
+      {
+        name: 'Node.js',
+        id: 2,
+        parts: [
+          {
+            name: 'Routing',
+            exercises: 3,
+            id: 1
+          },
+          {
+            name: 'Middlewares',
+            exercises: 7,
+            id: 2
+          }
+        ]
+      }
+    ]
+  
     return (
-    <div>
-      <Course course={course} />
-    </div>
+      <div>
+        {courses.map((course) => <Course course={course} key={course.id}/>)}
+      </div>
     )
   }
 
