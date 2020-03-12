@@ -3,11 +3,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
 
-const Country = ({name}) => <p>{name}</p>
+const Country = ({country}) => {
+  return (
+    <div>
+      <h1>{country.name}</h1>
+      <p>{country.capital}</p>
+      
+      <h2>languages</h2>
+      <ul>
+        {country.languages.map((language) => 
+        <li key={language.name}>{language.name}</li>)}
+      </ul>
+      
+      <img src={country.flag} height="30%" width="30%" alt={`Flag of ${country.name}`}/>
+    </div>
+  )
+}
 
 const Countries = ({data, limitExceeded}) => {
-  const result = limitExceeded ? <p>Too many matches, specify another filter</p> : data.map((country) => <Country key={country.name} name={country.name} />)
-  console.log(limitExceeded)
+  if (data.length === 1) {
+    return <Country country={data[0]} />
+  }
+  const result = limitExceeded ? <p>Too many matches, specify another filter</p> : data.map((country) => <p key={country.name}>{country.name}</p>)
   return result
 }
 
