@@ -1,7 +1,7 @@
-//2.11 puhelinluettelo
+//2.15-16 puhelinluettelo
 
 import React, { useState,useEffect } from 'react'
-import axios from 'axios'
+import PbDataService from './services/phonebookdata'
 import {FilterForm, PersonForm, Persons} from './components'
 
 const App = () => {
@@ -9,15 +9,12 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('')
-  const [ filterData, setFilterData ] = useState(persons)
 
+  // Get phonebook from server
   useEffect(() => {
-    console.log('effect')
-    axios.get('http://localhost:3001/persons')
-    .then(response => {
-      console.log('promise fulfilled')
-      setPersons(response.data)
-      updatePersonList('', response.data)
+    PbDataService.getAll()
+    .then(initialList => {
+      setPersons(initialList)
     })
   },[])
 
@@ -29,55 +26,44 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const filterPersons = event => {
-    handleFilterChange(event.target.value)
-    updatePersonList(event.target.value, persons)
-  }
-
-  const handleFilterChange = value => {
-    setNewFilter(value)
-  }
-
-  const updatePersonList = (filter, personList) => {  
-    let filteredList = personList
-    if (filter !== '') {
-      filteredList = personList.filter((person) => person.name.toLowerCase().includes(filter.toLowerCase()))
-    }
-
-    setFilterData(filteredList)
+  const handleFilterChange = event => {
+    setNewFilter(event.target.value)
   }
 
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = { name: newName, number: newNumber }   
-    const nameIsIncluded = persons.some(person => person.name === newName)
+    const nameIsIncluded = persons.some(person => person.name.toLowerCase()
+     === newName.toLowerCase())
 
     if (nameIsIncluded) {
       window.alert(`${newName} is already added to phonebook`)
     }
     else {
-      const updatedPersons = persons.concat(newPerson)
-      setPersons(updatedPersons)
-      updatePersonList(newFilter, updatedPersons)
+      // Add new person to server
+      PbDataService.create(newPerson)
+      .then(addedPerson => {
+        setPersons(persons.concat(addedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
     }
-    setNewName('')
-    setNewNumber('')
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <FilterForm newFilter={newFilter} filterData={filterPersons} />
+      <FilterForm newFilter={newFilter} filterData={handleFilterChange} />
 
       <h2>Add a new</h2>
       <PersonForm newName={newName} newNumber={newNumber} changeName={handleNameChange} 
       changeNumber={handleNumberChange} addPerson={addPerson}/>
 
       <h2>Numbers</h2>
-      <Persons filtered={filterData}/>
+      <Persons filtered={newFilter === '' ? persons : 
+      persons.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()))}/>
     </div>
   )
-
 }
 
 export default App
