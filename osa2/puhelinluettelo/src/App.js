@@ -1,14 +1,24 @@
-//2.18* puhelinluettelo
+//2.20* puhelinluettelo
 
 import React, { useState,useEffect } from 'react'
 import PbDataService from './services/phonebookdata'
-import {FilterForm, PersonForm, Persons} from './components'
+import {FilterForm, PersonForm, Persons, Notification} from './components'
 
 const App = () => {
-  const [ persons, setPersons] = useState([]) 
-  const [ newName, setNewName ] = useState('')
-  const [ newNumber, setNewNumber ] = useState('')
-  const [ newFilter, setNewFilter ] = useState('')
+  const [persons, setPersons] = useState([]) 
+  const [newName, setNewName ] = useState('')
+  const [newNumber, setNewNumber ] = useState('')
+  const [newFilter, setNewFilter ] = useState('')
+  const [notificationData, setNotification] = useState({message: null, error: false})
+
+  const notificationTimeOut = () => {
+    setTimeout(() => {
+    setNotification({message: null, error: false})
+    setNewName('')
+    setNewNumber('')
+  }, 5000)
+}
+
 
   // Get phonebook from server
   useEffect(() => {
@@ -50,16 +60,28 @@ const App = () => {
       PbDataService.create(newPerson)
       .then(addedPerson => {
         setPersons(persons.concat(addedPerson))
+        setNotification({message: `Added ${newName}`,
+       error: false})
       })
+      .catch(error => {
+        setNotification({message: `Adding ${newName} failed`,
+       error: true})
+      })
+      notificationTimeOut()
     }
-    setNewName('')
-    setNewNumber('')
   }
 
   const updateNumber = person => {
     PbDataService.update(person.id, person)
-    .then(updatedData => 
-      setPersons(persons.map((p) => p.id !== person.id ? p : updatedData)))
+    .then(updatedData => {
+      setPersons(persons.map((p) => p.id !== person.id ? p : updatedData))
+      setNotification({message: `Updated ${newName}'s number`,
+       error: false})
+    })
+    .catch(error => setNotification({message: `${person.name} was already removed from server`,
+       error: true}))
+       console.log(notificationData.error)
+    notificationTimeOut()
   }
 
   const deletePerson = (id, name) => {
@@ -68,14 +90,24 @@ const App = () => {
     if (confirmDelete) {
       const newList = persons.filter((person) => person.id !== id)
       PbDataService.deleteItem(id)
-      .then(setPersons(newList))
+      .then(() => {
+        setPersons(newList)
+        setNotification({message: `Deleted ${name}`,
+       error: false})
+      })
+      .catch(error => {
+        setNotification({message: `Deleting ${name} failed`,
+       error: true})
+      })
+      notificationTimeOut()
     }
-
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification errorOccured={notificationData.error} message={notificationData.message} />
+
       <FilterForm newFilter={newFilter} filterData={handleFilterChange} />
 
       <h2>Add a new</h2>
