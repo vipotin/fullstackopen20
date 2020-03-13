@@ -1,4 +1,4 @@
-//2.15-16 puhelinluettelo
+//2.17 puhelinluettelo
 
 import React, { useState,useEffect } from 'react'
 import PbDataService from './services/phonebookdata'
@@ -50,6 +50,18 @@ const App = () => {
     }
   }
 
+  const deletePerson = (id, name) => {
+    const confirmDelete = window.confirm(`Delete ${name} ?`)
+    
+    if (confirmDelete) {
+      const newList = persons.filter((person) => person.id !== id)
+      console.log(newList)
+      PbDataService.deleteItem(id)
+      .then(setPersons(newList))
+    }
+
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -61,7 +73,9 @@ const App = () => {
 
       <h2>Numbers</h2>
       <Persons filtered={newFilter === '' ? persons : 
-      persons.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()))}/>
+      persons.filter((person) => 
+      person.name.toLowerCase().includes(newFilter.toLowerCase()))}
+      action={deletePerson}/>
     </div>
   )
 }

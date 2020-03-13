@@ -3,7 +3,9 @@ import React from 'react'
 const FilterForm = ({newFilter, filterData}) => {
     return(
     <div>
-      <div>filter shown with: <input value={newFilter} onChange={filterData}/></div>
+      <div>
+        <label>filter shown with: </label>
+        <input value={newFilter} onChange={filterData}/></div>
     </div>
     ) 
   }
@@ -22,11 +24,17 @@ const FilterForm = ({newFilter, filterData}) => {
     )
   }
   
-  const Persons = ({filtered}) => filtered.map((person) => 
-  <Person key={person.name} name={person.name} number={person.number}/>)
+  const Persons = ({filtered, action}) => filtered.map((person) => 
+  <Person key={person.name} name={person.name} 
+  number={person.number} id={person.id} action={action}/>)
   
-  const Person = ({name, number}) => {
-  return <p>{name} {number}</p>
+  const Person = ({name, number, id, action}) => {
+  return (
+    <div>
+      {name} {number} <></>
+      <button onClick={() => action(id, name)}>delete</button>
+      </div>
+  )
   }
 
   export {
