@@ -9,17 +9,16 @@ const App = () => {
   const [newName, setNewName ] = useState('')
   const [newNumber, setNewNumber ] = useState('')
   const [newFilter, setNewFilter ] = useState('')
-  const [notificationData, setNotification] = useState({message: null, error: false})
+  const [errorOccured, setErrorOccured] = useState(true)
+  const [notification, setNotification] = useState(null)
 
   const notificationTimeOut = () => {
     setTimeout(() => {
-    setNotification({message: null, error: false})
+    setNotification(null)
     setNewName('')
     setNewNumber('')
-  }, 5000)
+  }, 4000)
 }
-
-
   // Get phonebook from server
   useEffect(() => {
     PbDataService.getAll()
@@ -60,12 +59,12 @@ const App = () => {
       PbDataService.create(newPerson)
       .then(addedPerson => {
         setPersons(persons.concat(addedPerson))
-        setNotification({message: `Added ${newName}`,
-       error: false})
+        setNotification(`Added ${newName}`)
+        setErrorOccured(false)
       })
       .catch(error => {
-        setNotification({message: `Adding ${newName} failed`,
-       error: true})
+       setNotification(`Adding ${newName} failed`)
+       setErrorOccured(true)
       })
       notificationTimeOut()
     }
@@ -75,12 +74,13 @@ const App = () => {
     PbDataService.update(person.id, person)
     .then(updatedData => {
       setPersons(persons.map((p) => p.id !== person.id ? p : updatedData))
-      setNotification({message: `Updated ${newName}'s number`,
-       error: false})
+       setNotification(`Updated ${newName}'s number`)
+       setErrorOccured(false)
     })
-    .catch(error => setNotification({message: `${person.name} was already removed from server`,
-       error: true}))
-       console.log(notificationData.error)
+    .catch(error => {
+       setNotification(`${person.name} was already removed from server`)
+       setErrorOccured(true)
+      })
     notificationTimeOut()
   }
 
@@ -92,12 +92,12 @@ const App = () => {
       PbDataService.deleteItem(id)
       .then(() => {
         setPersons(newList)
-        setNotification({message: `Deleted ${name}`,
-       error: false})
+       setNotification(`Deleted ${name}`)
+       setErrorOccured(false)
       })
       .catch(error => {
-        setNotification({message: `Deleting ${name} failed`,
-       error: true})
+       setNotification(`Deleting ${name} failed`)
+       setErrorOccured(true)
       })
       notificationTimeOut()
     }
@@ -106,7 +106,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification errorOccured={notificationData.error} message={notificationData.message} />
+
+      <Notification errorOccured={errorOccured} message={notification} />
 
       <FilterForm newFilter={newFilter} filterData={handleFilterChange} />
 
