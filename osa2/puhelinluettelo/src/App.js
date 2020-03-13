@@ -1,4 +1,4 @@
-//2.17 puhelinluettelo
+//2.18* puhelinluettelo
 
 import React, { useState,useEffect } from 'react'
 import PbDataService from './services/phonebookdata'
@@ -33,29 +33,40 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = { name: newName, number: newNumber }   
-    const nameIsIncluded = persons.some(person => person.name.toLowerCase()
+    const existingName = persons.find(person => person.name.toLowerCase()
      === newName.toLowerCase())
 
-    if (nameIsIncluded) {
-      window.alert(`${newName} is already added to phonebook`)
+    if (existingName) {
+      const confirmUpdate = window.confirm(`${newName} is already added to phonebook. Do you want
+      to replace the old number with a new one?`)
+      // Update number information
+      if (confirmUpdate) {
+        const newInformation = {...existingName, number: newNumber}
+        updateNumber(newInformation)
+      }
     }
     else {
       // Add new person to server
       PbDataService.create(newPerson)
       .then(addedPerson => {
         setPersons(persons.concat(addedPerson))
-        setNewName('')
-        setNewNumber('')
       })
     }
+    setNewName('')
+    setNewNumber('')
+  }
+
+  const updateNumber = person => {
+    PbDataService.update(person.id, person)
+    .then(updatedData => 
+      setPersons(persons.map((p) => p.id !== person.id ? p : updatedData)))
   }
 
   const deletePerson = (id, name) => {
     const confirmDelete = window.confirm(`Delete ${name} ?`)
-    
+    // Delete person from server
     if (confirmDelete) {
       const newList = persons.filter((person) => person.id !== id)
-      console.log(newList)
       PbDataService.deleteItem(id)
       .then(setPersons(newList))
     }
