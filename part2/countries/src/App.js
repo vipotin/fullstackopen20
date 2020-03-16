@@ -12,7 +12,6 @@ const App = () => {
   const countryLimit = 10
 
   useEffect(() => {
-    console.log('event')
     axios.get('https://restcountries.eu/rest/v2/all')
     .then(response => setCountries(response.data))
   },[])
