@@ -1,4 +1,4 @@
-//3.9-3.11 frontend
+// Part 3 phonebook frontend
 
 import React, { useState,useEffect } from 'react'
 import PbDataService from './services/phonebookdata'
@@ -12,7 +12,9 @@ const App = () => {
   const [errorOccured, setErrorOccured] = useState(true)
   const [notification, setNotification] = useState(null)
 
-  const notificationTimeOut = () => {
+  const showNotification = (message, isError) => {
+    setNotification(message)
+    setErrorOccured(isError)
     setTimeout(() => {
     setNotification(null)
     setNewName('')
@@ -59,14 +61,11 @@ const App = () => {
       PbDataService.create(newPerson)
       .then(addedPerson => {
         setPersons(persons.concat(addedPerson))
-        setNotification(`Added ${newName}`)
-        setErrorOccured(false)
+        showNotification(`Added ${newName}`, false)
       })
       .catch(error => {
-       setNotification(`Adding ${newName} failed`)
-       setErrorOccured(true)
+        showNotification(error.response.data.error, true)
       })
-      notificationTimeOut()
     }
   }
 
@@ -74,14 +73,11 @@ const App = () => {
     PbDataService.update(person.id, person)
     .then(updatedData => {
       setPersons(persons.map((p) => p.id !== person.id ? p : updatedData))
-       setNotification(`Updated ${newName}'s number`)
-       setErrorOccured(false)
+      showNotification(`Updated ${newName}'s number`, false)
     })
     .catch(error => {
-       setNotification(`${person.name} was already removed from server`)
-       setErrorOccured(true)
+       showNotification(`${person.name} was already removed from server`, true)
       })
-    notificationTimeOut()
   }
 
   const deletePerson = (id, name) => {
@@ -92,14 +88,11 @@ const App = () => {
       PbDataService.deleteItem(id)
       .then(() => {
         setPersons(newList)
-       setNotification(`Deleted ${name}`)
-       setErrorOccured(false)
+        showNotification(`Deleted ${name}`, false)
       })
       .catch(error => {
-       setNotification(`Deleting ${name} failed`)
-       setErrorOccured(true)
+        showNotification(`Deleting ${name} failed`, true)
       })
-      notificationTimeOut()
     }
   }
 
