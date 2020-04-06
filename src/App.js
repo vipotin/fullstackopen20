@@ -9,6 +9,9 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [blogTitle, setBlogTitle] = useState('')
+  const [blogAuthor, setBlogAuthor] = useState('')
+  const [blogUrl, setBlogUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [errorOccured, setErrorOccured] = useState(false)
 
@@ -23,7 +26,7 @@ const App = () => {
     if (loggedUserJSON) {
       const loggedUser = JSON.parse(loggedUserJSON)
       setUser(loggedUser)
-      blogService.setToken(loggedUser)
+      blogService.setToken(loggedUser.token)
     }
   }, [])
 
@@ -55,6 +58,22 @@ const App = () => {
     }
   }
 
+  const handleCreateBlog = async event => {
+    event.preventDefault()
+    try {
+      const newBlog = {
+        title: blogTitle,
+        author: blogAuthor,
+        url: blogUrl
+      }
+      await blogService.create(newBlog)
+      const blogList = await blogService.getAll()
+      setBlogs(blogList)
+    } catch (exception) {
+
+    }
+  }
+
   const loginForm = () => (
     <div>
     <h2>Log in to application</h2>
@@ -77,8 +96,23 @@ const App = () => {
   const blogForm = () => (
     <div>
       <h2>blogs</h2>
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
+      <div>
+        <p>{user.name} logged in</p>
+        <button onClick={handleLogout}>logout</button>
+      </div>
+      <h2>create new</h2>
+      <form onSubmit={handleCreateBlog}>
+        title: 
+        <input type='text' value={blogTitle} name='BlogTitle' 
+        onChange={({ target }) => setBlogTitle(target.value)}/>
+        <br></br>author:
+        <input type='text' value={blogAuthor} name='BlogAuthor' 
+        onChange={({ target }) => setBlogAuthor(target.value)}/>
+        <br></br>url:
+        <input type='text' value={blogUrl} name='BlogUrl' 
+        onChange={({ target }) => setBlogUrl(target.value)}/>
+        <br></br><button type='submit'>create</button>
+      </form>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
