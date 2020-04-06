@@ -21,4 +21,4 @@ const Notification = ({errorOccured, message}) => {
   )
 }
 
-export default { Notification }
+export default Notification

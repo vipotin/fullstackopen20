@@ -12,7 +12,7 @@ const App = () => {
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
   const [errorOccured, setErrorOccured] = useState(false)
 
   useEffect(() => {
@@ -30,6 +30,15 @@ const App = () => {
     }
   }, [])
 
+  const showNotification = (message, error) => {
+    setNotification(message)
+    setErrorOccured(error)
+    setTimeout(() => {
+      setNotification(null)
+      setErrorOccured(false)
+    }, 4000)
+  }
+
   const handleLogin = async event => {
     event.preventDefault()
     try {
@@ -37,24 +46,21 @@ const App = () => {
       window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
       blogService.setToken(loggedUser.token)
       setUser(loggedUser)
+      showNotification('login successful', false)
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong credentials')
-      setErrorOccured(true)
-      setTimeout(() => {
-        setErrorMessage(null)
-        setErrorOccured(false)
-      }, 4000)
+      showNotification('wrong username or password', true)
     }
   }
 
   const handleLogout = async event => {
     try {
       window.localStorage.removeItem('loggedUser')
+      showNotification('logout successful', false)
       setUser(null)
     } catch (exception) {
-
+      showNotification('logout failed', true)
     }
   }
 
@@ -69,8 +75,9 @@ const App = () => {
       await blogService.create(newBlog)
       const blogList = await blogService.getAll()
       setBlogs(blogList)
+      showNotification(`a new blog ${blogTitle} by ${blogAuthor} added`, false)
     } catch (exception) {
-
+        showNotification('fill all the fields', true)
     }
   }
 
@@ -121,7 +128,7 @@ const App = () => {
 
   return (
     <div>
-      {/* <Notification errorOccured={errorOccured} message={errorMessage} /> */}
+      <Notification errorOccured={errorOccured} message={notification} />
       {user === null ? loginForm() : blogForm()}
     </div>
   )
