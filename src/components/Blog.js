@@ -5,6 +5,7 @@ const Blog = ({ blog }) => {
         {blog.title} {blog.author}
         <br></br>{blog.url}
         <br></br>likes {blog.likes} <button>like</button>
+        <br></br>{blog.user.name}
       </div>
   )
 
@@ -27,14 +28,14 @@ const Blog = ({ blog }) => {
   }
 
   const changeView = () => {
-    setShowDetails(!showDetails)
-    if (showDetails) {
+    if (!showDetails) {
       setButtonText('hide')
       setContent(fullContent)
     } else {
       setButtonText('view')
       setContent(shortContent)
     }
+    setShowDetails(!showDetails)
   }
   
   return (
