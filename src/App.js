@@ -17,6 +17,7 @@ const App = () => {
   const [blogUrl, setBlogUrl] = useState('')
   const [notification, setNotification] = useState(null)
   const [errorOccured, setErrorOccured] = useState(false)
+  const blogFormRef = React.createRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -67,18 +68,13 @@ const App = () => {
     }
   }
 
-  const handleCreateBlog = async event => {
-    event.preventDefault()
+  const addBlog = async blogObject => {
     try {
-      const newBlog = {
-        title: blogTitle,
-        author: blogAuthor,
-        url: blogUrl
-      }
-      await blogService.create(newBlog)
+      blogFormRef.current.toggleVisibility()
+      await blogService.create(blogObject)
       const blogList = await blogService.getAll()
       setBlogs(blogList)
-      showNotification(`a new blog ${blogTitle} by ${blogAuthor} added`, false)
+      showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false)
     } catch (exception) {
         showNotification('fill all the fields', true)
     }
@@ -86,13 +82,7 @@ const App = () => {
 
   const loginForm = () => (
     <div>
-      <LoginForm
-              username={username}
-              password={password}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-              handleSubmit={handleLogin}
-            />
+      <LoginForm handleSubmit={handleLogin}/>
     </div>
   )
 
@@ -104,7 +94,7 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
       <br></br>
-      <Togglable buttonLabel='new blog'>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm
           title={blogTitle}
           author={blogAuthor}
@@ -112,7 +102,7 @@ const App = () => {
           handleTitleChange={({ target }) => setBlogTitle(target.value)}
           handleAuthorChange={({ target }) => setBlogAuthor(target.value)}
           handleUrlChange={({ target }) => setBlogUrl(target.value)}
-          handleSubmit={handleCreateBlog}
+          createBlog={addBlog}
         />
       </Togglable>
       <br></br>
