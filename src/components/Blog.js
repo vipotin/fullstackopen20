@@ -1,10 +1,20 @@
 import React, { useState } from 'react'
-const Blog = ({ blog }) => {
-  const fullContent = (
+
+const Blog = ({ blog, update }) => {
+const [likes, setLikes] = useState(blog.likes)
+  const updateLikes = () => {
+    console.log('update', blog)
+    blog.likes++
+    update(blog)
+    setLikes(likes + 1)
+    setContent(fullContent)
+  }
+  
+  const fullContent  = (
       <div>
         {blog.title} {blog.author}
         <br></br>{blog.url}
-        <br></br>likes {blog.likes} <button>like</button>
+        <br></br>likes {likes} <button onClick={updateLikes}>like</button>
         <br></br>{blog.user.name}
       </div>
   )
@@ -15,10 +25,6 @@ const Blog = ({ blog }) => {
     </div>
   )
 
-  const [showDetails, setShowDetails] = useState(false)
-  const [buttonText, setButtonText] = useState('view')
-  const [content, setContent] = useState(shortContent)
-
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -26,6 +32,10 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5
   }
+
+  const [showDetails, setShowDetails] = useState(false)
+  const [buttonText, setButtonText] = useState('view')
+  const [content, setContent] = useState(shortContent)
 
   const changeView = () => {
     if (!showDetails) {
@@ -37,7 +47,7 @@ const Blog = ({ blog }) => {
     }
     setShowDetails(!showDetails)
   }
-  
+
   return (
   <div style={blogStyle}>
     <div>
