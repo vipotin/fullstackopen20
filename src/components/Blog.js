@@ -1,25 +1,35 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, update }) => {
-const [likes, setLikes] = useState(blog.likes)
+const Blog = ({ blog, user, update, remove }) => {
+
+  const [likes, setLikes] = useState(blog.likes)
+  const [showDetails, setShowDetails] = useState(false)
+  const [buttonText, setButtonText] = useState('view')
+
   const updateLikes = () => {
-    console.log('update', blog)
     blog.likes++
-    update(blog)
     setLikes(likes + 1)
-    setContent(fullContent)
+    update(blog)
   }
-  
-  const fullContent  = (
+
+  const removeBlog = () => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      remove(blog)
+    }
+  }
+
+  const fullContent  = () => (
       <div>
         {blog.title} {blog.author}
         <br></br>{blog.url}
-        <br></br>likes {likes} <button onClick={updateLikes}>like</button>
+        <br></br>likes {likes} 
+        <button onClick={updateLikes}>like</button>
         <br></br>{blog.user.name}
+        <br></br>{user.name === blog.user.name ? <button onClick={removeBlog}>remove</button> : null}    
       </div>
   )
 
-  const shortContent = (
+  const shortContent = () => (
     <div>
       {blog.title} {blog.author}
     </div>
@@ -33,25 +43,15 @@ const [likes, setLikes] = useState(blog.likes)
     marginBottom: 5
   }
 
-  const [showDetails, setShowDetails] = useState(false)
-  const [buttonText, setButtonText] = useState('view')
-  const [content, setContent] = useState(shortContent)
-
   const changeView = () => {
-    if (!showDetails) {
-      setButtonText('hide')
-      setContent(fullContent)
-    } else {
-      setButtonText('view')
-      setContent(shortContent)
-    }
     setShowDetails(!showDetails)
+    !showDetails ? setButtonText('hide') : setButtonText('view')
   }
 
   return (
   <div style={blogStyle}>
     <div>
-      {content}
+      {showDetails ? fullContent() : shortContent()}
     </div>
     <button onClick={changeView}>{buttonText}</button>
   </div>

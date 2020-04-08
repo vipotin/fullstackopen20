@@ -34,6 +34,12 @@ const App = () => {
     }
   }, [])
 
+  const updateBlogList = async () => {
+    const blogList = await blogService.getAll()
+    setBlogs(blogList)
+    
+  }
+
   const showNotification = (message, error) => {
     setNotification(message)
     setErrorOccured(error)
@@ -72,8 +78,7 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility()
       await blogService.create(blogObject)
-      const blogList = await blogService.getAll()
-      setBlogs(blogList)
+      updateBlogList()
       showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false)
     } catch (exception) {
         showNotification('fill all the fields', true)
@@ -82,9 +87,27 @@ const App = () => {
 
   const addLike = async blogObject => {
     try {
-      console.log(blogObject.likes)
-      blogObject.user = blogObject.user.id
-      await blogService.update(blogObject)
+      let updatedBlog = blogObject
+      updatedBlog.user = blogObject.user.id
+      await blogService.update(updatedBlog)
+      updateBlogList()
+    } catch (exception) {
+
+    }
+  }
+
+  // const getUpdatedBlog = async blogObject => {
+  //   try {
+  //     return await blogService.getItem(blogObject)
+  //   } catch (exception) {
+
+  //   }
+  // }
+
+  const deleteBlog = async blogObject => {
+    try {
+      await blogService.deleteItem(blogObject)
+      updateBlogList()
     } catch (exception) {
 
     }
@@ -117,7 +140,7 @@ const App = () => {
       </Togglable>
       <br></br>
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} update={addLike}/>
+        <Blog key={blog.id} blog={blog} update={addLike} remove={deleteBlog} user={user}/>
       )}
     </div>
   )
