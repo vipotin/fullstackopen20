@@ -53,7 +53,7 @@ const Blog = ({ blog, user, update, remove }) => {
       <div>
         {showDetails ? fullContent() : shortContent()}
       </div>
-      <button onClick={changeView}>{buttonText}</button>
+      <button id='show' onClick={changeView}>{buttonText}</button>
     </div>
   )
 }
