@@ -18,15 +18,15 @@ const Blog = ({ blog, user, update, remove }) => {
     }
   }
 
-  const fullContent  = () => (
-      <div>
-        {blog.title} {blog.author}
-        <br></br>{blog.url}
-        <br></br>likes {likes} 
-        <button onClick={updateLikes}>like</button>
-        <br></br>{blog.user.name}
-        <br></br>{user.name === blog.user.name ? <button onClick={removeBlog}>remove</button> : null}    
-      </div>
+  const fullContent = () => (
+    <div>
+      {blog.title} {blog.author}
+      <br></br>{blog.url}
+      <br></br>likes {likes}
+      <button onClick={updateLikes}>like</button>
+      <br></br>{blog.user.name}
+      <br></br>{user.name === blog.user.name ? <button onClick={removeBlog}>remove</button> : null}
+    </div>
   )
 
   const shortContent = () => (
@@ -49,12 +49,12 @@ const Blog = ({ blog, user, update, remove }) => {
   }
 
   return (
-  <div style={blogStyle}>
-    <div>
-      {showDetails ? fullContent() : shortContent()}
+    <div style={blogStyle}>
+      <div>
+        {showDetails ? fullContent() : shortContent()}
+      </div>
+      <button onClick={changeView}>{buttonText}</button>
     </div>
-    <button onClick={changeView}>{buttonText}</button>
-  </div>
   )
 }
 

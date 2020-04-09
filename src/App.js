@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -37,7 +37,6 @@ const App = () => {
   const updateBlogList = async () => {
     const blogList = await blogService.getAll()
     setBlogs(blogList)
-    
   }
 
   const showNotification = (message, error) => {
@@ -64,7 +63,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = async event => {
+  const handleLogout = async () => {
     try {
       window.localStorage.removeItem('loggedUser')
       showNotification('logout successful', false)
@@ -81,7 +80,7 @@ const App = () => {
       updateBlogList()
       showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false)
     } catch (exception) {
-        showNotification('fill all the fields', true)
+      showNotification('fill all the fields', true)
     }
   }
 
@@ -92,7 +91,7 @@ const App = () => {
       await blogService.update(updatedBlog)
       updateBlogList()
     } catch (exception) {
-
+      showNotification('adding like failed', true)
     }
   }
 
@@ -108,8 +107,9 @@ const App = () => {
     try {
       await blogService.deleteItem(blogObject)
       updateBlogList()
+      showNotification(`a new blog ${blogObject.title} by ${blogObject.author} deleted`, false)
     } catch (exception) {
-
+      showNotification('deleting failed', true)
     }
   }
 
