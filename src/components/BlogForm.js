@@ -18,17 +18,17 @@ const BlogForm = ({ createBlog }) => {
     setUrl('')
   }
   return (
-    <div>
+    <div className='form'>
       <h2>create new</h2>
       <form onSubmit={addBlog}>
         title:
-        <input type='text' value={title} name='BlogTitle'
+        <input id='title' type='text' value={title} name='BlogTitle'
           onChange={({ target }) => setTitle(target.value)}/>
         <br></br>author:
-        <input type='text' value={author} name='BlogAuthor'
+        <input id='author' type='text' value={author} name='BlogAuthor'
           onChange={({ target }) => setAuthor(target.value)}/>
         <br></br>url:
-        <input type='text' value={url} name='BlogUrl'
+        <input id='url' type='text' value={url} name='BlogUrl'
           onChange={({ target }) => setUrl(target.value)}/>
         <br></br><button type='submit'>save</button>
       </form>
