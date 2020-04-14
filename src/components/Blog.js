@@ -23,7 +23,7 @@ const Blog = ({ blog, user, update, remove }) => {
       {blog.title} {blog.author}
       <br></br>{blog.url}
       <br></br>likes {likes}
-      <button onClick={updateLikes}>like</button>
+      <button id='likeButton' onClick={updateLikes}>like</button>
       <br></br>{blog.user.name}
       <br></br>{user.name === blog.user.name ? <button onClick={removeBlog}>remove</button> : null}
     </div>
@@ -50,9 +50,7 @@ const Blog = ({ blog, user, update, remove }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
-        {showDetails ? fullContent() : shortContent()}
-      </div>
+      {showDetails ? fullContent() : shortContent()}
       <button id='show' onClick={changeView}>{buttonText}</button>
     </div>
   )
