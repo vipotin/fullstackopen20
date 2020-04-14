@@ -5,6 +5,18 @@ const newBlog = {
   likes: 5
 }
 
+const user = {
+  name: 'Roope Ankka',
+  username: 'ropa',
+  password: 'verysecret'
+}
+
+const secondUser = {
+  name: 'Second User',
+  username: 'seconduser',
+  password: 'secret'
+}
+
 const secondBlog = {
   title: 'Second blog',
   author: 'Other author',
@@ -15,12 +27,8 @@ const secondBlog = {
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3000/api/testing/reset')
-    const user = {
-      name: 'Roope Ankka',
-      username: 'ropa',
-      password: 'verysecret'
-    }
     cy.request('POST', 'http://localhost:3000/api/users/', user)
+    cy.request('POST', 'http://localhost:3000/api/users/', secondUser)
     cy.visit('http://localhost:3000')
   })
 
@@ -74,6 +82,20 @@ describe('Blog app', function() {
       cy.contains(secondBlog.title).parent().find('button').click()
       cy.get('#likeButton').click()
       cy.contains(`likes ${secondBlog.likes + 1}`)
+    })
+
+    it('A blog with the same owner can be removed', function() {
+      cy.createBlog(secondBlog)
+      cy.contains(secondBlog.title).parent().find('button').click()
+      cy.contains('remove').click()
+      cy.should('not.contain', secondBlog.title)
+    })
+
+    it.only('A blog with a different owner cannot be removed', function() {
+      cy.createBlog(secondBlog)
+      cy.login({ username: 'seconduser', password: 'secret' })
+      cy.contains(secondBlog.title).parent().find('button').click()
+      cy.should('not.contain', 'remove')
     })
   })
 })
