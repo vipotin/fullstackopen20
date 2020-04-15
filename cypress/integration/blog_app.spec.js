@@ -17,10 +17,17 @@ const secondUser = {
   password: 'secret'
 }
 
-const secondBlog = {
-  title: 'Second blog',
+const firstBlog = {
+  title: 'First blog',
   author: 'Other author',
-  url: 'www.secondblog.com',
+  url: 'www.example.com',
+  likes: 0
+}
+
+const secondBlog ={
+  title: 'Second blog blog',
+  author: 'Another author',
+  url: 'www.example.com',
   likes: 0
 }
 
@@ -60,7 +67,7 @@ describe('Blog app', function() {
     })
   })
 
-  describe.only('When logged in', function() {
+  describe('When logged in', function() {
     beforeEach(function() {
       cy.login({ username: 'ropa', password: 'verysecret' })
     })
@@ -78,24 +85,33 @@ describe('Blog app', function() {
     })
 
     it('A blog can be liked', function() {
-      cy.createBlog(secondBlog)
-      cy.contains(secondBlog.title).parent().find('button').click()
+      cy.createBlog(firstBlog)
+      cy.contains(firstBlog.title).parent().find('button').click()
       cy.get('#likeButton').click()
-      cy.contains(`likes ${secondBlog.likes + 1}`)
+      cy.contains(`likes ${firstBlog.likes + 1}`)
     })
 
     it('A blog with the same owner can be removed', function() {
-      cy.createBlog(secondBlog)
-      cy.contains(secondBlog.title).parent().find('button').click()
+      cy.createBlog(firstBlog)
+      cy.contains(firstBlog.title).parent().find('button').click()
       cy.contains('remove').click()
-      cy.should('not.contain', secondBlog.title)
+      cy.should('not.contain', firstBlog.title)
     })
 
-    it.only('A blog with a different owner cannot be removed', function() {
-      cy.createBlog(secondBlog)
+    it('A blog with a different owner cannot be removed', function() {
+      cy.createBlog(firstBlog)
       cy.login({ username: 'seconduser', password: 'secret' })
-      cy.contains(secondBlog.title).parent().find('button').click()
+      cy.contains(firstBlog.title).parent().find('button').click()
       cy.should('not.contain', 'remove')
+    })
+
+    it('Blogs are ordered descending by like count', function() {
+      cy.createBlog(firstBlog)
+      cy.createBlog(secondBlog)
+
+      cy.get('.blog').eq(1).find('#show').click()
+      cy.get('#likeButton').click()
+      cy.get('.blog:first').should('contain', secondBlog.title)
     })
   })
 })

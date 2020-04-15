@@ -49,7 +49,7 @@ const Blog = ({ blog, user, update, remove }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {showDetails ? fullContent() : shortContent()}
       <button id='show' onClick={changeView}>{buttonText}</button>
     </div>
