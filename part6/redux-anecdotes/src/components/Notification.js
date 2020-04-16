@@ -8,8 +8,9 @@ const Notification = () => {
     padding: 10,
     borderWidth: 1
   }
+  const hide = { visibility: 'hidden' }
   return (
-    <div style={style}>
+    <div style={notification ? style : hide}>
       {notification}
     </div>
   )
