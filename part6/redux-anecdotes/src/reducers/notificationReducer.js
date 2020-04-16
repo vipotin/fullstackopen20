@@ -1,11 +1,11 @@
 const initialState = null
 
 export const setVoteNotification = content => {
-  return { type: 'MESSAGE_VOTE', data: content}
+  return { type: 'MESSAGE_VOTE', data: content }
 }
 
 export const setAddNotification = content => {
-  return { type: 'MESSAGE_ADD', data: content}
+  return { type: 'MESSAGE_ADD', data: content }
 }
 
 export const closeNotification = () => {
