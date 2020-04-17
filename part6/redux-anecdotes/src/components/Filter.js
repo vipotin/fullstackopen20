@@ -7,7 +7,6 @@ const Filter = () => {
 
   const handleChange = (event) => {
     dispatch(filterData(event.target.value))
-    console.log('end of handle change')
   }
   const style = {
     marginBottom: 10
