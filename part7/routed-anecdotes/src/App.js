@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   BrowserRouter as Router,
-  Switch, Route, Link, useParams
+  Switch, Route, Link, useParams, Redirect
 } from 'react-router-dom'
 
 const Menu = () => {
@@ -18,11 +18,9 @@ const Menu = () => {
 }
 
 const Anecdote = ({ anecdotes }) => {
-  console.log(anecdotes)
   const id = useParams().id
-  console.log(id)
   const anecdote = anecdotes.find(a => Number(a.id) === Number(id))
-  console.log(anecdote)
+
   return (
     <div>
       <h2>{`${anecdote.content} by ${anecdote.author}`}</h2>
@@ -126,10 +124,17 @@ const App = () => {
   ])
 
   const [notification, setNotification] = useState('')
+  const [isListUpdated, setIsListUpdated] = useState(false)
 
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
+    setIsListUpdated(true)
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    setTimeout(() => {
+      setNotification(null)
+      setIsListUpdated(false)
+    }, 10000)
   }
 
   const anecdoteById = (id) =>
@@ -151,12 +156,14 @@ const App = () => {
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+        {notification ? notification : null}
         <Switch>
-        <Route path='/anecdotes/:id'>
+          <Route path='/anecdotes/:id'>
             <Anecdote anecdotes={anecdotes} />
           </Route>
           <Route path='/create'>
             <CreateNew addNew={addNew} />
+            {isListUpdated ? <Redirect to='/' /> : null}
           </Route>
           <Route path='/about'>
             <About />
