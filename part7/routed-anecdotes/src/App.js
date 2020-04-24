@@ -88,6 +88,9 @@ const CreateNew = (props) => {
     }
     props.addNew(newAnecdote)
   }
+  const deleteProperty = (state, property) => {
+    return { property, ...state }
+  }
 
   return (
     <div>
@@ -95,15 +98,15 @@ const CreateNew = (props) => {
       <form>
         <div>
           content
-          <input name='content' {...content} />
+          <input name='content' {...deleteProperty(content, content.reset)} />
         </div>
         <div>
           author
-          <input name='author' {...author} />
+          <input name='author' {...deleteProperty(author, author.reset)} />
         </div>
         <div>
           url for more info
-          <input name='info' {...info} />
+          <input name='info' {...deleteProperty(info, info.reset)}  />
         </div>
         <button onClick={handleSubmit}>create</button>
         <button onClick={resetFields}>reset</button>
