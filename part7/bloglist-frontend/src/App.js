@@ -8,7 +8,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './actions/notification'
-import { initializeBlogs, addBlog } from './actions/blogList'
+import { initializeBlogs, addBlog, addLike, deleteBlog } from './actions/blogs'
 
 const App = () => {
   //const [blogs, setBlogs] = useState([])
@@ -75,11 +75,12 @@ const App = () => {
     }
   }
 
-  const addLike = async blogObject => {
+  const likeBlog = async blogObject => {
     try {
       let updatedBlog = blogObject
       updatedBlog.user = blogObject.user.id
-      await blogService.update(updatedBlog)
+      const blogData = await blogService.update(updatedBlog)
+      dispatch(addLike(blogData))
       dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, false, timeout))
     } catch (exception) {
       dispatch(setNotification('adding like failed', true, timeout))
@@ -94,13 +95,13 @@ const App = () => {
   //   }
   // }
 
-  const deleteBlog = async blogObject => {
+  const removeBlog = async blogObject => {
     try {
       await blogService.deleteItem(blogObject)
-      // updateBlogList()
+      dispatch(deleteBlog(blogObject))
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} deleted`, false, timeout))
     } catch (exception) {
-      dispatch(setNotification('deleting failed', true, timeout))
+      dispatch(setNotification('remove failed', true, timeout))
     }
   }
 
@@ -132,7 +133,7 @@ const App = () => {
       <br></br>
       <div id='blogList'>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} update={addLike} remove={deleteBlog} user={user}/>
+          <Blog key={blog.id} blog={blog} update={likeBlog} remove={removeBlog} user={user}/>
         )}
       </div>
 
