@@ -6,11 +6,12 @@ import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './actions/notification'
+import { initializeBlogs, addBlog } from './actions/blogList'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
@@ -18,12 +19,13 @@ const App = () => {
   const blogFormRef = React.createRef()
   const dispatch = useDispatch()
   const timeout = 4
+  const blogs = useSelector(state => state.blogs).sort((a, b) => b.likes - a.likes)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      dispatch(initializeBlogs(blogs))
     )
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -34,10 +36,10 @@ const App = () => {
     }
   }, [])
 
-  const updateBlogList = async () => {
-    const blogList = await blogService.getAll()
-    setBlogs(blogList)
-  }
+  // const updateBlogList = async () => {
+  //   const blogList = await blogService.getAll()
+  //   setBlogs(blogList)
+  // }
 
   const handleLogin = async userObject => {
     try {
@@ -62,11 +64,11 @@ const App = () => {
     }
   }
 
-  const addBlog = async blogObject => {
+  const createBlog = async blogObject => {
     try {
       blogFormRef.current.toggleVisibility()
-      await blogService.create(blogObject)
-      updateBlogList()
+      const blogData = await blogService.create(blogObject)
+      dispatch(addBlog(blogData))
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false, timeout))
     } catch (exception) {
       dispatch(setNotification('fill all the fields', true, timeout))
@@ -78,7 +80,6 @@ const App = () => {
       let updatedBlog = blogObject
       updatedBlog.user = blogObject.user.id
       await blogService.update(updatedBlog)
-      updateBlogList()
       dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, false, timeout))
     } catch (exception) {
       dispatch(setNotification('adding like failed', true, timeout))
@@ -96,7 +97,7 @@ const App = () => {
   const deleteBlog = async blogObject => {
     try {
       await blogService.deleteItem(blogObject)
-      updateBlogList()
+      // updateBlogList()
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} deleted`, false, timeout))
     } catch (exception) {
       dispatch(setNotification('deleting failed', true, timeout))
@@ -125,12 +126,12 @@ const App = () => {
           handleTitleChange={({ target }) => setBlogTitle(target.value)}
           handleAuthorChange={({ target }) => setBlogAuthor(target.value)}
           handleUrlChange={({ target }) => setBlogUrl(target.value)}
-          createBlog={addBlog}
+          createBlog={createBlog}
         />
       </Togglable>
       <br></br>
       <div id='blogList'>
-        {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+        {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} update={addLike} remove={deleteBlog} user={user}/>
         )}
       </div>
