@@ -67,8 +67,9 @@ const App = () => {
   const createBlog = async blogObject => {
     try {
       blogFormRef.current.toggleVisibility()
-      const blogData = await blogService.create(blogObject)
-      dispatch(addBlog(blogData))
+      const response = await blogService.create(blogObject)
+      const blogDataWithUserName = await blogService.getItem(response)
+      dispatch(addBlog(blogDataWithUserName))
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false, timeout))
     } catch (exception) {
       dispatch(setNotification('fill all the fields', true, timeout))
