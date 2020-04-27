@@ -9,10 +9,10 @@ import loginService from './services/login'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './actions/notification'
 import { initializeBlogs, addBlog, addLike, deleteBlog } from './actions/blogs'
+import { setUser } from './actions/login'
 
 const App = () => {
-  //const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
+  const user = useSelector(state => state.user)
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
@@ -31,15 +31,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
     if (loggedUserJSON) {
       const loggedUser = JSON.parse(loggedUserJSON)
-      setUser(loggedUser)
+      dispatch(setUser(loggedUser))
       blogService.setToken(loggedUser.token)
     }
-  }, [])
-
-  // const updateBlogList = async () => {
-  //   const blogList = await blogService.getAll()
-  //   setBlogs(blogList)
-  // }
+  }, [dispatch])
 
   const handleLogin = async userObject => {
     try {
@@ -47,7 +42,7 @@ const App = () => {
       const loggedUser = await loginService.login(userObject)
       window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
       blogService.setToken(loggedUser.token)
-      setUser(loggedUser)
+      dispatch(setUser(loggedUser))
       dispatch(setNotification('login successful', false, timeout))
     } catch (exception) {
       dispatch(setNotification('wrong username or password', true, timeout))
@@ -58,7 +53,7 @@ const App = () => {
     try {
       window.localStorage.removeItem('loggedUser')
       dispatch(setNotification('logout successful', false, timeout))
-      setUser(null)
+      dispatch(setUser(null))
     } catch (exception) {
       dispatch(setNotification('logout failed', true, timeout))
     }
@@ -87,14 +82,6 @@ const App = () => {
       dispatch(setNotification('adding like failed', true, timeout))
     }
   }
-
-  // const getUpdatedBlog = async blogObject => {
-  //   try {
-  //     return await blogService.getItem(blogObject)
-  //   } catch (exception) {
-
-  //   }
-  // }
 
   const removeBlog = async blogObject => {
     try {

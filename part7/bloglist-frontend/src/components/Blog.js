@@ -6,7 +6,8 @@ const Blog = ({ blog, user, update, remove }) => {
   const [showDetails, setShowDetails] = useState(false)
   const [buttonText, setButtonText] = useState('view')
   console.log(blog, user)
-  console.log(blog.user.name === user.name)
+  console.log(blog.user.username, user.username)
+  console.log(blog.user.username === user.username)
 
   const updateLikes = () => {
     blog.likes++
@@ -27,7 +28,7 @@ const Blog = ({ blog, user, update, remove }) => {
       <br></br>likes {likes}
       <button id='likeButton' onClick={updateLikes}>like</button>
       <br></br>{blog.user.name}
-      <br></br>{user.name === blog.user.name ? <button onClick={removeBlog}>remove</button> : null}
+      <br></br>{blog.user.username === user.username ? <button onClick={removeBlog}>remove</button> : null}
     </div>
   )
 
