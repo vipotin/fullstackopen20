@@ -29,9 +29,14 @@ const App = () => {
   const timeout = 4
   const blogs = useSelector(state => state.blogs).sort((a, b) => b.likes - a.likes)
 
-  const match = useRouteMatch('/users/:id')
-  const userMatch = match ? 
-    users.find(user => user.id === match.params.id) : null
+  const userIdMatch = useRouteMatch('/users/:id')
+  const userMatch = userIdMatch? 
+    users.find(user => user.id === userIdMatch.params.id) : null
+
+  const blogIdMatch = useRouteMatch('/blogs/:id')
+  console.log(blogIdMatch)
+  const blogMatch = blogIdMatch? 
+    blogs.find(blog => blog.id === blogIdMatch.params.id) : null
     
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -122,7 +127,15 @@ const App = () => {
     )
   }
 
-  const BlogList = () => (
+  const BlogList = () => {
+    const blogStyle = {
+      paddingTop: 10,
+      paddingLeft: 2,
+      border: 'solid',
+      borderWidth: 1,
+      marginBottom: 5
+    }
+    return (
     <div>
       <br></br>
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
@@ -139,11 +152,12 @@ const App = () => {
       <br></br>
       <div id='blogList'>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} update={likeBlog} remove={removeBlog} user={user}/>
+          <div style={blogStyle}key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></div>
         )}
       </div>
     </div>
-  )
+    )
+  }
 
   return (
     <div>
@@ -158,8 +172,11 @@ const App = () => {
 
         <Switch>
           <Route path='/users/:id'>
-            {console.log('show user', userMatch)}
-            <User user={userMatch}/>
+            <User user={userMatch} />
+          </Route>
+          <Route path='/blogs/:id'>
+            {console.log('show blog', blogMatch)}
+            <Blog blog={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
           </Route>
         <Route path='/users'>
           <UserList users={users} />
