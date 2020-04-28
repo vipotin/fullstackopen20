@@ -127,6 +127,13 @@ const App = () => {
     )
   }
 
+  const LoginInfo = () => (
+    <>
+      {user.name} logged in
+      <button onClick={handleLogout}>logout</button>
+    </>
+  )
+
   const BlogList = () => {
     const blogStyle = {
       paddingTop: 10,
@@ -162,13 +169,13 @@ const App = () => {
   return (
     <div>
         <div>
-          <Link to='/'>home </Link>
+          <Link to='/'>blogs </Link>
           <Link to='/users'>users </Link>
-          {/* <Link to='/blogs'>blogs </Link> */}
+          {user ? <LoginInfo /> : <Link to='/login'>Login</Link>}
         </div>
 
         <Notification />
-        <Info />
+        <h2>BlogApp</h2>
 
         <Switch>
           <Route path='/users/:id'>
