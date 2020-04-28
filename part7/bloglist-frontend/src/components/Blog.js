@@ -5,9 +5,6 @@ const Blog = ({ blog, user, update, remove }) => {
   const [likes, setLikes] = useState(blog.likes)
   const [showDetails, setShowDetails] = useState(false)
   const [buttonText, setButtonText] = useState('view')
-  console.log(blog, user)
-  console.log(blog.user.username, user.username)
-  console.log(blog.user.username === user.username)
 
   const updateLikes = () => {
     blog.likes++

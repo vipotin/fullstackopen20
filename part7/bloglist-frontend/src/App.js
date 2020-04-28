@@ -4,15 +4,23 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import UserList from './components/UserList'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './actions/notification'
 import { initializeBlogs, addBlog, addLike, deleteBlog } from './actions/blogs'
 import { setUser } from './actions/login'
+import { initializeUsers } from './actions/users'
+import {
+  BrowserRouter as Router,
+  Switch, Route, Link, Redirect
+} from 'react-router-dom'
 
 const App = () => {
-  const user = useSelector(state => state.user)
+  const user = useSelector(state => state.loggedUser)
+  const users = useSelector(state => state.users)
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
@@ -25,7 +33,11 @@ const App = () => {
     blogService.getAll().then(blogs =>
       dispatch(initializeBlogs(blogs))
     )
+    userService.getAll().then(users =>
+      dispatch(initializeUsers(users))
+    )
   }, [dispatch])
+  
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -93,19 +105,21 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <div>
-      <LoginForm handleLogin={handleLogin}/>
-    </div>
-  )
-
-  const blogSection = () => (
+  const Info = () => {
+    if (!user) return null
+    return (
     <div>
       <h2>blogs</h2>
       <div>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
+    </div>
+    )
+  }
+
+  const BlogList = () => (
+    <div>
       <br></br>
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm
@@ -124,14 +138,41 @@ const App = () => {
           <Blog key={blog.id} blog={blog} update={likeBlog} remove={removeBlog} user={user}/>
         )}
       </div>
-
     </div>
   )
 
   return (
     <div>
-      <Notification />
-      {user === null ? loginForm() : blogSection()}
+      <Router>
+        <div>
+          <Link to='/'>home </Link>
+          <Link to='/users'>users </Link>
+          {/* <Link to='/blogs'>blogs </Link> */}
+        </div>
+
+        <Notification />
+        <Info />
+
+        <Switch>
+          <Route path='/users/:id'>
+            
+          </Route>
+        <Route path='/users'>
+          <UserList users={users} />
+        </Route>
+        <Route path='/login'>
+          <LoginForm handleLogin={handleLogin}/>
+        </Route>
+        <Route path='/blogs'>
+          {console.log(user, user !== null)}
+          {user ? <BlogList /> : <Redirect to="/login" />}
+        </Route>
+        <Route path='/'>
+          {user ? <Redirect to="/blogs" /> : <Redirect to="/login" />}
+        </Route>
+      </Switch>
+
+      </Router>
     </div>
   )
 }

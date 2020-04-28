@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useHistory } from 'react-router-dom'
 
 const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  let history = useHistory()
 
-  const handleSubmit = async event =>  {
+  const handleSubmit = event =>  {
     event.preventDefault()
     handleLogin({
       username: username,
       password: password
     })
+    history.push('/blogs')
+    console.log(history)
     setUsername('')
     setPassword('')
   }
