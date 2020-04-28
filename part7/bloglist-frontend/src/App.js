@@ -5,6 +5,7 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import UserList from './components/UserList'
+import User from './components/User'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/users'
@@ -14,8 +15,7 @@ import { initializeBlogs, addBlog, addLike, deleteBlog } from './actions/blogs'
 import { setUser } from './actions/login'
 import { initializeUsers } from './actions/users'
 import {
-  BrowserRouter as Router,
-  Switch, Route, Link, Redirect
+  Switch, Route, Link, Redirect, useRouteMatch
 } from 'react-router-dom'
 
 const App = () => {
@@ -29,6 +29,10 @@ const App = () => {
   const timeout = 4
   const blogs = useSelector(state => state.blogs).sort((a, b) => b.likes - a.likes)
 
+  const match = useRouteMatch('/users/:id')
+  const userMatch = match ? 
+    users.find(user => user.id === match.params.id) : null
+    
   useEffect(() => {
     blogService.getAll().then(blogs =>
       dispatch(initializeBlogs(blogs))
@@ -143,7 +147,6 @@ const App = () => {
 
   return (
     <div>
-      <Router>
         <div>
           <Link to='/'>home </Link>
           <Link to='/users'>users </Link>
@@ -155,7 +158,8 @@ const App = () => {
 
         <Switch>
           <Route path='/users/:id'>
-            
+            {console.log('show user', userMatch)}
+            <User user={userMatch}/>
           </Route>
         <Route path='/users'>
           <UserList users={users} />
@@ -171,8 +175,6 @@ const App = () => {
           {user ? <Redirect to="/blogs" /> : <Redirect to="/login" />}
         </Route>
       </Switch>
-
-      </Router>
     </div>
   )
 }
