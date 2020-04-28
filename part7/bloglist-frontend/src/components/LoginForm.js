@@ -12,9 +12,7 @@ const LoginForm = ({ handleLogin }) => {
     handleLogin({
       username: username,
       password: password
-    })
-    history.push('/blogs')
-    console.log(history)
+    }, history)
     setUsername('')
     setPassword('')
   }

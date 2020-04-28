@@ -57,7 +57,7 @@ const App = () => {
     }
   }, [dispatch])
 
-  const handleLogin = async userObject => {
+  const handleLogin = async (userObject, history) => {
     try {
       console.log(userObject.username, userObject.password)
       const loggedUser = await loginService.login(userObject)
@@ -65,6 +65,7 @@ const App = () => {
       blogService.setToken(loggedUser.token)
       dispatch(setUser(loggedUser))
       dispatch(setNotification('login successful', false, timeout))
+      history.push('/blogs')
     } catch (exception) {
       dispatch(setNotification('wrong username or password', true, timeout))
     }
@@ -96,7 +97,7 @@ const App = () => {
     try {
       let updatedBlog = blogObject
       updatedBlog.user = blogObject.user.id
-      const blogData = await blogService.update(updatedBlog)
+      const blogData = await blogService.update(blogObject)
       dispatch(addLike(blogData))
       dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, false, timeout))
     } catch (exception) {
@@ -114,23 +115,9 @@ const App = () => {
     }
   }
 
-  const Info = () => {
-    if (!user) return null
-    return (
-    <div>
-      <h2>blogs</h2>
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
-    </div>
-    )
-  }
-
   const LoginInfo = () => (
     <>
-      {user.name} logged in
-      <button onClick={handleLogout}>logout</button>
+      {user.name} logged in <button onClick={handleLogout}>logout</button>
     </>
   )
 
@@ -142,6 +129,7 @@ const App = () => {
       borderWidth: 1,
       marginBottom: 5
     }
+
     return (
     <div>
       <br></br>
@@ -169,8 +157,8 @@ const App = () => {
   return (
     <div>
         <div>
-          <Link to='/'>blogs </Link>
-          <Link to='/users'>users </Link>
+          <Link to='/'>Blogs </Link>
+          <Link to='/users'>Users </Link>
           {user ? <LoginInfo /> : <Link to='/login'>Login</Link>}
         </div>
 
@@ -186,7 +174,7 @@ const App = () => {
             <Blog blog={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
           </Route>
         <Route path='/users'>
-          <UserList users={users} />
+          {user ? <UserList users={users} /> : <Redirect to="/login" />} 
         </Route>
         <Route path='/login'>
           <LoginForm handleLogin={handleLogin}/>
