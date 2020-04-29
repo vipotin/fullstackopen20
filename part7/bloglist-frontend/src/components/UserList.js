@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import {
   Table,
   TableBody,
-  TableHead,
   TableCell,
   TableContainer,
   TableRow,
@@ -19,15 +18,16 @@ const UserList = ({users}) => {
   return (
     <TableContainer component={Paper}>
       <Table>
-        <TableHead>
-          <TableCell>
-            <Typography variant='h6'>User</Typography>
-          </TableCell>
-          <TableCell>
-            <Typography variant='h6'>Blogs created</Typography>
-          </TableCell>
-        </TableHead>
         <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>User</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography variant='h6'>Blogs created</Typography>
+            </TableCell>
+          </TableRow>
+
           {users.map(user => 
           <TableRow key={user.id}>
             <TableCell>

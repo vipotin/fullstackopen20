@@ -23,15 +23,15 @@ const BlogForm = ({ createBlog }) => {
       <Typography variant='h6'>Create a new blog</Typography>
       <form onSubmit={addBlog}>
         <div>
-          <TextField required='true' label='title' value={title}
+          <TextField required={true} label='title' value={title}
             onChange={({ target }) => setTitle(target.value)}/>
         </div>
         <div>
-          <TextField required='true' label='author' value={author} name='BlogAuthor'
+          <TextField required={true}  label='author' value={author} name='BlogAuthor'
             onChange={({ target }) => setAuthor(target.value)}/>
         </div>
         <div>
-          <TextField required='true' label='url' type='text' value={url} name='BlogUrl'
+          <TextField required={true} label='url' type='text' value={url} name='BlogUrl'
             onChange={({ target }) => setUrl(target.value)}/>
         </div>
           <Button type='submit' variant='contained' color='primary'>save</Button>

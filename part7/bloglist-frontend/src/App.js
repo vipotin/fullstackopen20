@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
-import Notification from './components/Notification'
+import BlogCard from './components/BlogCard'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
@@ -18,7 +18,7 @@ import {
   Switch, Route, Link, Redirect, useRouteMatch
 } from 'react-router-dom'
 import {
-  AppBar, Toolbar, Button, Container, Card, CardContent, Typography, Grid
+  AppBar, Toolbar, Button, Container, Typography, Grid
 } from '@material-ui/core'
 
 import { Alert } from '@material-ui/lab'
@@ -121,6 +121,7 @@ const App = () => {
     }
   }
 
+
   const BlogList = () => {
 
     return (
@@ -140,14 +141,7 @@ const App = () => {
       <br></br>
       <div id='blogList'>
         {blogs.map(blog =>
-          <Card key={blog.id} variant='outlined' style={{margin: '10px'}}>
-            <CardContent>
-              <Typography>
-                {blog.title}
-              </Typography>
-              <Button variant='outlined' color='primary' component={Link} to={`/blogs/${blog.id}`}>More</Button>
-            </CardContent>
-          </Card>
+          <BlogCard key={blog.id} blog={blog} />
         )}
       </div>
     </Container>
@@ -159,9 +153,9 @@ const App = () => {
       <AppBar position='static'>
         <Toolbar>
         <Grid
-          justify="space-between" // Add it here :)
+          justify="space-between"
           container 
-          spacing={12}
+          spacing={1}
         >
           <Typography variant='h6'>
             Blog App
@@ -190,7 +184,7 @@ const App = () => {
           </Route>
           <Route path='/blogs/:id'>
             {console.log('show blog', blogMatch)}
-            <Blog blog={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
+            <Blog blogData={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
           </Route>
         <Route path='/users'>
           <UserList users={users} />

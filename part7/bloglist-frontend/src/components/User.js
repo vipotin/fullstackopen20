@@ -1,4 +1,8 @@
 import React from 'react'
+import BlogCard from './BlogCard'
+import {
+  Card, List, CardContent, Typography
+} from '@material-ui/core'
 
 const User = ({ user }) => {
   
@@ -6,15 +10,20 @@ const User = ({ user }) => {
   console.log(user, user.blogs)
 
   return (
-    <div>
-      <h2>{user.name}</h2>
-      <h3>added blogs</h3>
-      <ul>
+    <Card>
+      <CardContent>
+        <Typography variant='h6'>{user.name}</Typography>
+        {user.blogs.length !== 0 ? 
+        <Typography variant='body1'>Added blogs</Typography> :
+        <Typography variant='body1'>No added blogs</Typography>}
+        
+        <List>
         {user.blogs.map(blog => 
-        <li key={blog.id}>{blog.title}</li>
+        <BlogCard blog={blog} key={blog.id}>{blog.title}</BlogCard>
         )}
-      </ul>
-    </div>
+      </List>
+      </CardContent>
+    </Card>
   )
 }
 
