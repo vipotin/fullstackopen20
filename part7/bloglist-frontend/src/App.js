@@ -17,6 +17,11 @@ import { initializeUsers } from './actions/users'
 import {
   Switch, Route, Link, Redirect, useRouteMatch
 } from 'react-router-dom'
+import {
+  AppBar, Toolbar, Button, Container, Card, CardContent, Typography, Grid
+} from '@material-ui/core'
+
+import { Alert } from '@material-ui/lab'
 
 const App = () => {
   const user = useSelector(state => state.loggedUser)
@@ -28,6 +33,7 @@ const App = () => {
   const dispatch = useDispatch()
   const timeout = 4
   const blogs = useSelector(state => state.blogs).sort((a, b) => b.likes - a.likes)
+  const notification = useSelector(state => state.notification)
 
   const userIdMatch = useRouteMatch('/users/:id')
   const userMatch = userIdMatch? 
@@ -64,20 +70,20 @@ const App = () => {
       window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
       blogService.setToken(loggedUser.token)
       dispatch(setUser(loggedUser))
-      dispatch(setNotification('login successful', false, timeout))
       history.push('/blogs')
+      dispatch(setNotification(`welcome ${loggedUser.username}`, 'success', timeout))
     } catch (exception) {
-      dispatch(setNotification('wrong username or password', true, timeout))
+      dispatch(setNotification('wrong username or password', 'error', timeout))
     }
   }
 
   const handleLogout = async () => {
     try {
       window.localStorage.removeItem('loggedUser')
-      dispatch(setNotification('logout successful', false, timeout))
+      dispatch(setNotification('logout successful', 'success', timeout))
       dispatch(setUser(null))
     } catch (exception) {
-      dispatch(setNotification('logout failed', true, timeout))
+      dispatch(setNotification('logout failed', 'error', timeout))
     }
   }
 
@@ -87,9 +93,9 @@ const App = () => {
       const response = await blogService.create(blogObject)
       const blogDataWithUserName = await blogService.getItem(response)
       dispatch(addBlog(blogDataWithUserName))
-      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, false, timeout))
+      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 'success', timeout))
     } catch (exception) {
-      dispatch(setNotification('fill all the fields', true, timeout))
+      dispatch(setNotification('fill all the fields', 'error', timeout))
     }
   }
 
@@ -99,9 +105,9 @@ const App = () => {
       updatedBlog.user = blogObject.user.id
       const blogData = await blogService.update(blogObject)
       dispatch(addLike(blogData))
-      dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, false, timeout))
+      dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, 'success', timeout))
     } catch (exception) {
-      dispatch(setNotification('adding like failed', true, timeout))
+      dispatch(setNotification('adding like failed', 'error', timeout))
     }
   }
 
@@ -109,29 +115,16 @@ const App = () => {
     try {
       await blogService.deleteItem(blogObject)
       dispatch(deleteBlog(blogObject))
-      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} deleted`, false, timeout))
+      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} deleted`, 'success', timeout))
     } catch (exception) {
-      dispatch(setNotification('remove failed', true, timeout))
+      dispatch(setNotification('remove failed', 'error', timeout))
     }
   }
 
-  const LoginInfo = () => (
-    <>
-      {user.name} logged in <button onClick={handleLogout}>logout</button>
-    </>
-  )
-
   const BlogList = () => {
-    const blogStyle = {
-      paddingTop: 10,
-      paddingLeft: 2,
-      border: 'solid',
-      borderWidth: 1,
-      marginBottom: 5
-    }
 
     return (
-    <div>
+    <Container>
       <br></br>
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm
@@ -147,23 +140,49 @@ const App = () => {
       <br></br>
       <div id='blogList'>
         {blogs.map(blog =>
-          <div style={blogStyle}key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></div>
+          <Card key={blog.id} variant='outlined' style={{margin: '10px'}}>
+            <CardContent>
+              <Typography>
+                {blog.title}
+              </Typography>
+              <Button variant='outlined' color='primary' component={Link} to={`/blogs/${blog.id}`}>More</Button>
+            </CardContent>
+          </Card>
         )}
       </div>
-    </div>
+    </Container>
     )
   }
 
   return (
     <div>
-        <div>
-          <Link to='/'>Blogs </Link>
-          <Link to='/users'>Users </Link>
-          {user ? <LoginInfo /> : <Link to='/login'>Login</Link>}
-        </div>
+      <AppBar position='static'>
+        <Toolbar>
+        <Grid
+          justify="space-between" // Add it here :)
+          container 
+          spacing={12}
+        >
+          <Typography variant='h6'>
+            Blog App
+          </Typography>
+          <Button color='inherit' component={Link} to='/blogs'>
+            Blogs
+          </Button>
+          <Button color='inherit' component={Link} to='/users'>
+            Users
+          </Button>
+          {!user ? 
+          <Button style={{ flex: 1 }} color='inherit' component={Link} to='/login'>
+          Login
+          </Button> :
+        <Button color='inherit' onClick={handleLogout}>Logout</Button>
+        }
+        </Grid>
+        </Toolbar>
+      </AppBar>
 
-        <Notification />
-        <h2>BlogApp</h2>
+        {notification && <Alert severity={notification.severity}>{notification.message}</Alert>}
 
         <Switch>
           <Route path='/users/:id'>
@@ -174,14 +193,14 @@ const App = () => {
             <Blog blog={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
           </Route>
         <Route path='/users'>
-          {user ? <UserList users={users} /> : <Redirect to="/login" />} 
+          <UserList users={users} />
         </Route>
         <Route path='/login'>
           <LoginForm handleLogin={handleLogin}/>
         </Route>
         <Route path='/blogs'>
           {console.log(user, user !== null)}
-          {user ? <BlogList /> : <Redirect to="/login" />}
+          <BlogList />
         </Route>
         <Route path='/'>
           {user ? <Redirect to="/blogs" /> : <Redirect to="/login" />}

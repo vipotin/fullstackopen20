@@ -1,8 +1,8 @@
 let timeoutId
 
-export const setNotification = (message, error, time) => {
+export const setNotification = (message, severity, time) => {
   return async dispatch => {
-    dispatch({ type:'SET_NOTIFICATION', data: { message, error }})
+    dispatch({ type:'SET_NOTIFICATION', data: { message, severity }})
     if (timeoutId) {
       clearTimeout(timeoutId)
     }
