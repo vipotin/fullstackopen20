@@ -1,4 +1,4 @@
-import React, { useState} from 'react'
+import React from 'react'
 import {
   Box, Card, Avatar, CardContent, CardMedia, Typography, Divider, Button
 } from '@material-ui/core'
@@ -6,17 +6,14 @@ import { Link } from 'react-router-dom'
 
 
 const avatar = 'https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light'
+const image =  "https://image.freepik.com/free-photo/river-foggy-mountains-landscape_1204-511.jpg"
 
-const Blog = ({ blogData, user, update, remove }) => {
+const Blog = ({ blog, user, update, remove }) => {
 
-  console.log('render blog', blogData)
-  //if (!blog) return null
-
-  const [blog, setBlogContent] = useState(blogData)
+  if (!blog) return null
 
   const updateLikes = () => {
     update({...blog, likes: blog.likes + 1})
-    setBlogContent({...blog, likes: blog.likes + 1})
   }
 
   const removeBlog = () => {
@@ -34,9 +31,7 @@ const Blog = ({ blogData, user, update, remove }) => {
       }}>
       <CardMedia
         style={{paddingTop: "35%"}}
-        image={
-          "https://image.freepik.com/free-photo/river-foggy-mountains-landscape_1204-511.jpg"
-        }/>
+        image={image}/>
       <CardContent>
         <Box display='flex' flexDirection='row'>
           <Box flexGrow={1}>

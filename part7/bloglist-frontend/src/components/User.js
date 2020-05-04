@@ -7,7 +7,6 @@ import {
 const User = ({ user }) => {
   
   if (!user) return null
-  console.log(user, user.blogs)
 
   return (
     <Card>

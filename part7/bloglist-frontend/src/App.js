@@ -40,7 +40,6 @@ const App = () => {
     users.find(user => user.id === userIdMatch.params.id) : null
 
   const blogIdMatch = useRouteMatch('/blogs/:id')
-  console.log(blogIdMatch)
   const blogMatch = blogIdMatch? 
     blogs.find(blog => blog.id === blogIdMatch.params.id) : null
     
@@ -65,7 +64,6 @@ const App = () => {
 
   const handleLogin = async (userObject, history) => {
     try {
-      console.log(userObject.username, userObject.password)
       const loggedUser = await loginService.login(userObject)
       window.localStorage.setItem('loggedUser', JSON.stringify(loggedUser))
       blogService.setToken(loggedUser.token)
@@ -101,10 +99,8 @@ const App = () => {
 
   const likeBlog = async blogObject => {
     try {
-      let updatedBlog = blogObject
-      updatedBlog.user = blogObject.user.id
-      const blogData = await blogService.update(blogObject)
-      dispatch(addLike(blogData))
+      await blogService.update({...blogObject, user: blogObject.user.id})
+      dispatch(addLike(blogObject))
       dispatch(setNotification(`you liked ${blogObject.title} by ${blogObject.author}`, 'success', timeout))
     } catch (exception) {
       dispatch(setNotification('adding like failed', 'error', timeout))
@@ -183,8 +179,7 @@ const App = () => {
             <User user={userMatch} />
           </Route>
           <Route path='/blogs/:id'>
-            {console.log('show blog', blogMatch)}
-            <Blog blogData={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
+            <Blog blog={blogMatch} update={likeBlog} remove={removeBlog} user={user}/>
           </Route>
         <Route path='/users'>
           <UserList users={users} />
@@ -193,7 +188,6 @@ const App = () => {
           <LoginForm handleLogin={handleLogin}/>
         </Route>
         <Route path='/blogs'>
-          {console.log(user, user !== null)}
           <BlogList />
         </Route>
         <Route path='/'>
