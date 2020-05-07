@@ -1,4 +1,4 @@
-const { ApolloServer, gql, Mutation } = require('apollo-server')
+const { ApolloServer, gql } = require('apollo-server')
 const { v1: uuidv1 } = require('uuid')
 
 let authors = [
