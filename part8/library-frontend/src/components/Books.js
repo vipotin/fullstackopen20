@@ -10,6 +10,7 @@ const Books = (props) => {
     return null
   }
 
+  console.log(data)
   const books = data.allBooks
 
   if (loading) return <p>Loading...</p>

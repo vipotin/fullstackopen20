@@ -1,11 +1,29 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const { v1: uuidv1 } = require('uuid')
+require('dotenv').config()
+const mongoose = require('mongoose')
+const Book = require('./models/book')
+const Author = require('./models/author')
+
+mongoose.set('useFindAndModify', false)
+mongoose.connect(process.env.MONGODB_URI, 
+  { useNewUrlParser: true, useUnifiedTopology: true, 'useCreateIndex': true })
+.then(async () => { 
+  console.log('Connected to MongoDB')
+  // await Author.deleteMany({})
+  // await Book.deleteMany({})
+  // const newauthor = await new Author(authors[0]).save()
+  // const newBook = {title: 'Clean Code', published: 2008,  author: newauthor._id, genres: ['refactoring']}
+  // const savedBook = await new Book(newBook).save()
+  // console.log(savedBook.author, savedBook)
+})
+.catch((error) => { console.log('error connection to MongoDB:', error.message) })
 
 let authors = [
   {
     name: 'Robert Martin',
-    id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
-    born: 1952,
+    // id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
+    born: 1952
   },
   {
     name: 'Martin Fowler',
@@ -36,8 +54,8 @@ let books = [
   {
     title: 'Clean Code',
     published: 2008,
-    author: 'Robert Martin',
-    id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
+    // author: 'Robert Martin',
+    // id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
     genres: ['refactoring']
   },
   {
@@ -87,7 +105,7 @@ let books = [
 const typeDefs = gql`
   type Book {
     title: String!
-    author: String!
+    author: Author!
     published: Int!
     genres: [String!]!
     id: ID!
@@ -124,33 +142,54 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      if (args.author && !args.genre)
-        return books.filter(book => book.author === args.author)
-      else if (args.genre && !args.author)
-        return books.filter(book => book.genres.includes(args.genre))
-      else if (args.author && args.genre)
-        return books.filter(book => book.author === args.author 
-          && book.genres.includes(args.genre))
-      else return books
+    bookCount: () => Book.collection.countDocuments,
+    authorCount: () => Author.collection.countDocuments,
+    allBooks: async (root, args) => {
+      // if (args.author && !args.genre)
+      //   return books.filter(book => book.author === args.author)
+      // else if (args.genre && !args.author)
+      //   return books.filter(book => book.genres.includes(args.genre))
+      // else if (args.author && args.genre)
+      //   return books.filter(book => book.author === args.author 
+      //     && book.genres.includes(args.genre))
+      return Book.find({})
     },
     allAuthors: () => {
-      authors.map(author => {
-        const bookList = books.filter(book => book.author === author.name)
-        author.books = bookList
-        author.bookCount = bookList.length
-      })
-      return authors
+      // Author.find({}).map(author => {
+      //   const bookList = books.filter(book => book.author === author.name)
+      //   author.books = bookList
+      //   author.bookCount = bookList.length
+      // })
+      return Author.find({})
+    }
+  },
+  Book: {
+    author: (root) => {
+      console.log('returning book')
+      author = Author.findById(root.author)
+      console.log(root)
+      return { name: author.name, born: author.born }
     }
   },
   Mutation: {
-    addBook: (parent, args, context, info) => {
-      const book = { ...args, id: uuidv1() }
-      books = books.concat(book)
-      if (!authors.map(author => author.name).includes(args.author)) {
-        authors = authors.concat({ name: args.author, id: uuidv1() })
+    addBook: async (parent, args, context, info) => {
+      console.log('find author', args.author, args)
+      let author = await Author.findOne({ name: args.author })
+      console.log(author, !author)
+      try {
+        console.log('try')
+        if (!author) {
+          author = new Author({ name: args.author, born: null })
+          await author.save()
+          console.log('new author', author)
+        }
+        const book = new Book({ ...args, author: author._id })
+        await book.save()
+        console.log(book, author)
+      } catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args
+          })
       }
       return book
     },
@@ -167,7 +206,7 @@ const resolvers = {
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers
 })
 
 server.listen().then(({ url }) => {
