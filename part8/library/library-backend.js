@@ -79,6 +79,12 @@ const typeDefs = gql`
 `
 
 const resolvers = {
+  Book: {
+    author: async (root) => {
+      author = await Author.findById(root.author)
+      return { name: author.name, born: author.born }
+    }
+  },
   Query: {
     bookCount: () => Book.collection.countDocuments,
     authorCount: () => Author.collection.countDocuments,
@@ -107,14 +113,6 @@ const resolvers = {
     },
     me: (root, args, context) => {
       return context.loggedUser
-    }
-  },
-  Book: {
-    author: (root) => {
-      console.log('returning book')
-      author = Author.findById(root.author)
-      console.log(root)
-      return { name: author.name, born: author.born }
     }
   },
   Mutation: {
