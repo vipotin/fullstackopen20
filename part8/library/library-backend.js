@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URI,
 })
 .catch((error) => { console.log('error connection to MongoDB:', error.message) })
 
-let authors = [
+let authorsList = [
   {
     name: 'Robert Martin',
     // id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
@@ -144,7 +144,7 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments,
     authorCount: () => Author.collection.countDocuments,
-    allBooks: async (root, args) => {
+    allBooks: (root, args) => {
       // if (args.author && !args.genre)
       //   return books.filter(book => book.author === args.author)
       // else if (args.genre && !args.author)
@@ -152,15 +152,20 @@ const resolvers = {
       // else if (args.author && args.genre)
       //   return books.filter(book => book.author === args.author 
       //     && book.genres.includes(args.genre))
-      return Book.find({})
+      if (args.genre) {
+        return Book.find({ genres: args.genre })
+      }
+      else return Book.find({})
     },
-    allAuthors: () => {
-      // Author.find({}).map(author => {
-      //   const bookList = books.filter(book => book.author === author.name)
-      //   author.books = bookList
-      //   author.bookCount = bookList.length
-      // })
-      return Author.find({})
+    allAuthors: async () => {
+      const authors = await Author.find({})
+      const authorWithBooks = authors.map(async author => {
+        const bookList = await Book.find({ author: author._id })
+        author.books = bookList
+        author.bookCount = bookList.length
+        return author
+      })
+      return await Promise.all(authorWithBooks)
     }
   },
   Book: {
@@ -173,25 +178,20 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (parent, args, context, info) => {
-      console.log('find author', args.author, args)
       let author = await Author.findOne({ name: args.author })
-      console.log(author, !author)
       try {
-        console.log('try')
         if (!author) {
           author = new Author({ name: args.author, born: null })
           await author.save()
-          console.log('new author', author)
         }
         const book = new Book({ ...args, author: author._id })
         await book.save()
-        console.log(book, author)
+        return book
       } catch (error) {
           throw new UserInputError(error.message, {
             invalidArgs: args
           })
       }
-      return book
     },
     editAuthor: (parent, args, context, info) => {
       const author = authors.find(author => author.name === args.name)
