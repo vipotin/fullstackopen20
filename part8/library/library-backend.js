@@ -193,13 +193,11 @@ const resolvers = {
           })
       }
     },
-    editAuthor: (parent, args, context, info) => {
-      const author = authors.find(author => author.name === args.name)
-      if (!author) return null
-      const newData = {...author, born: args.setBornTo}
-      authors = authors.map(a => a.id !== author.id ? a : newData)
-
-      return newData
+    editAuthor: async (parent, args, context, info) => {
+      const author = await Author.findOneAndUpdate({ name: args.name }, { born: args.setBornTo }, {
+        new: true
+      })
+      return !author ? null : author
     }
   } 
 }
