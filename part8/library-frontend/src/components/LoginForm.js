@@ -23,8 +23,8 @@ const LoginForm = ({ setError, setToken, show }) => {
 
 
   if (!show) {
-    return null
-  }
+    return result.data ? <p>{`Welcome ${username}!`}</p> : null
+    }
 
   const submit = async (event) => {
     event.preventDefault()

@@ -31,7 +31,6 @@ export const NEW_BOOK = gql`
     ) {
       title
       author {
-        id
         name
       }
       published
