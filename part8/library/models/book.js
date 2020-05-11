@@ -16,8 +16,7 @@ const schema = new mongoose.Schema({
   },
   genres: [
     { type: String }
-  ],
-  // versionKey: false
+  ]
 })
 
 module.exports = mongoose.model('Book', schema)
