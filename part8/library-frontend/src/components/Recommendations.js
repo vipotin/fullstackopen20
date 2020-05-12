@@ -8,7 +8,7 @@ const Recommendations = ({ show }) => {
   const [favGenre, setFavGenre] = useState(null)
 
   useEffect(() => {
-    userData.data ? setFavGenre(userData.data.me.favoriteGenre) : setFavGenre(null)
+    (userData.data && userData.data.me) ? setFavGenre(userData.data.me.favoriteGenre) : setFavGenre(null)
   }, [userData.data])
 
   const bookData = useQuery(ALL_BOOKS, {

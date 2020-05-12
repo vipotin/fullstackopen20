@@ -1,5 +1,5 @@
 import React, { useState , useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { LOGIN } from '../queries'
 
 const LoginForm = ({ setError, setToken, show }) => {
@@ -23,7 +23,7 @@ const LoginForm = ({ setError, setToken, show }) => {
 
 
   if (!show) {
-    return result.data ? <p>{`Welcome ${username}!`}</p> : null
+    return result.data ? <p>{`${username} logged in`}</p> : null
     }
 
   const submit = async (event) => {

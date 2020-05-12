@@ -8,17 +8,17 @@ import { useApolloClient } from '@apollo/client'
 
 const App = () => {
   const [page, setPage] = useState('authors')
-  const [token, setToken] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [token, setToken] = useState(localStorage.getItem('user-token'))
+  // const [errorMessage, setErrorMessage] = useState(null)
   const client = useApolloClient()
 
-  const Notify = ({ message }) => {
-    return(
-      <div>
-        {message}
-      </div>
-    )
-  }
+  // const Notify = ({ message }) => {
+  //   return(
+  //     <div>
+  //       {message}
+  //     </div>
+  //   )
+  // }
 
   const logout = () => {
     setToken(null)
@@ -46,9 +46,9 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         {!token  ? null : <button onClick={() => setPage('add')}>add book</button>}
+        {!token ? null : <button onClick={() => setPage('recommendation')}>recommendation</button>}
         {!token  ? <button onClick={() => setPage('login')}>login</button> :
         <button onClick={() => logout()}>logout</button>}
-        <button onClick={() => setPage('recommendation')}>recommendation</button>
       </div>
 
       <Authors
@@ -61,19 +61,18 @@ const App = () => {
       />
 
       <NewBook
-        show={page === 'add' && token}
+        show={token ? page === 'add' : null}
+      />
+
+      <Recommendations 
+        show={token ? page === 'recommendation' : null}
       />
 
       <LoginForm
         show={!token ? page === 'login' : null}
         setToken={setToken}
-        setError={setErrorMessage}
+        // setError={setErrorMessage}
       />
-
-      <Recommendations 
-        show={page === 'recommendation'}
-      />
-
 
     </div>
   )
