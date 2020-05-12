@@ -6,12 +6,11 @@ import { ALL_BOOKS, GET_USERDATA } from '../queries'
 const Recommendations = ({ show }) => {
   const userData = useQuery(GET_USERDATA)
   const [favGenre, setFavGenre] = useState(null)
-  
+
   useEffect(() => {
     userData.data ? setFavGenre(userData.data.me.favoriteGenre) : setFavGenre(null)
   }, [userData.data])
 
-  console.log(userData)
   const bookData = useQuery(ALL_BOOKS, {
     variables: { genre: favGenre }
   })
