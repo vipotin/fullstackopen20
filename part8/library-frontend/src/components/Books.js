@@ -6,23 +6,32 @@ import { ALL_BOOKS } from '../queries'
 const Books = (props) => {
 
   const [genre, setGenre] = useState(null)
+  const [genres, setGenres] = useState([])
   const { loading, data } = useQuery(ALL_BOOKS, {
     variables: { genre }
   })
-  // const [genres, setGenres] = useState([])
 
-  // useEffect(() => {
-  //   const genreList = data.allBooks.map(book => book.genres.reduce((acc, current) => {
-  //     return acc.includes(current) ? acc : acc.concat(current)
-  //   }))
-  //   setGenres(genreList)
-  // }, [data.allBooks])
+  const reducer = (acc, current) => {
+    current.genres.forEach(genre => {
+      if (!acc.includes(genre)) {
+        acc.push(genre)
+      }
+    })
+    return acc
+  }
+
+  useEffect(() => {
+    let genrelist = null
+    if (!loading && !genre) {
+     genrelist = data.allBooks.reduce(reducer,[])
+     setGenres(genrelist)
+    }
+  }, [loading, genre, data])
 
   if (!props.show) {
     return null
   }
 
-  const genres = ['refactoring', 'test']
   const books = data.allBooks
 
   if (loading) return <p>Loading...</p>
