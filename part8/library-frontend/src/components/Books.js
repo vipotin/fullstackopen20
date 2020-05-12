@@ -1,15 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import BookList from './BookList'
 import { useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
 
-  const { loading, data } = useQuery(ALL_BOOKS)
+  const [genre, setGenre] = useState(null)
+  const { loading, data } = useQuery(ALL_BOOKS, {
+    variables: { genre }
+  })
+  // const [genres, setGenres] = useState([])
+
+  // useEffect(() => {
+  //   const genreList = data.allBooks.map(book => book.genres.reduce((acc, current) => {
+  //     return acc.includes(current) ? acc : acc.concat(current)
+  //   }))
+  //   setGenres(genreList)
+  // }, [data.allBooks])
 
   if (!props.show) {
     return null
   }
 
+  const genres = ['refactoring', 'test']
   const books = data.allBooks
 
   if (loading) return <p>Loading...</p>
@@ -18,26 +31,14 @@ const Books = (props) => {
     <div>
       <h2>books</h2>
 
-      <table>
-        <tbody>
-          <tr>
-            <th></th>
-            <th>
-              author
-            </th>
-            <th>
-              published
-            </th>
-          </tr>
-          {books.map(a =>
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {genre ? <p>in genre <b>{genre}</b></p> : null}
+
+      <BookList books={books} />
+
+      {genres.map(genre =>
+        <button key={genre} value={genre} onClick={({ target }) => setGenre(target.value)}>{genre}</button>
+      )}
+      <button key='allGenres' onClick={() => setGenre(null)}>all genres</button>
     </div>
   )
 }
