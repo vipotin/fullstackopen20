@@ -6,7 +6,7 @@ import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
 import { useApolloClient, useSubscription
 } from '@apollo/client'
-import { BOOK_ADDED, ALL_BOOKS} from './queries'
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS } from './queries'
 
   // const Notify = ({ message }) => {
   //   return(
@@ -38,21 +38,33 @@ const App = () => {
   const client = useApolloClient()
 
   const updateCache = (addedBook) => {
-    const includedIn = (set, obj) => 
+    const includedIn = (set, obj) => {
+      console.log(obj)
       set.map(p => p.id).includes(obj.id)
+    }
 
     console.log('all books cache')
 
     // update booklist
     const bookDataInStore = client.readQuery({ query: ALL_BOOKS })
+    console.log(bookDataInStore.allBooks)
     if (!includedIn(bookDataInStore.allBooks, addedBook)) {
-      bookDataInStore.allBooks.push(addedBook)
       client.writeQuery({
         query: ALL_BOOKS,
-        data: bookDataInStore
+        data: { allBooks: bookDataInStore.allBooks.concat(addedBook) }
       })
     }
-    console.log(bookDataInStore, client)
+
+    // update authorlist
+    const authorDataInStore = client.readQuery({ query: ALL_AUTHORS })
+    console.log(authorDataInStore.allAuthors)
+    const authorExists = authorDataInStore.allAuthors.map(p => p.name).includes(addedBook.author.name)
+    if (!authorExists) {
+      client.writeQuery({
+        query: ALL_AUTHORS,
+        data: { allAuthors: authorDataInStore.allAuthors.concat(addedBook.author) }
+      })
+    }
   }
 
   useSubscription(BOOK_ADDED, {
