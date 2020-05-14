@@ -6,7 +6,7 @@ import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
 import { useApolloClient, useSubscription
 } from '@apollo/client'
-import { BOOK_ADDED, ALL_BOOKS } from './queries'
+import { BOOK_ADDED, ALL_BOOKS} from './queries'
 
   // const Notify = ({ message }) => {
   //   return(
@@ -41,13 +41,18 @@ const App = () => {
     const includedIn = (set, obj) => 
       set.map(p => p.id).includes(obj.id)
 
-    const dataInStore = client.readQuery({ query: ALL_BOOKS })
-    if (!includedIn(dataInStore.allBooks, addedBook)) {
+    console.log('all books cache')
+
+    // update booklist
+    const bookDataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(bookDataInStore.allBooks, addedBook)) {
+      bookDataInStore.allBooks.push(addedBook)
       client.writeQuery({
         query: ALL_BOOKS,
-        data: { allPersons : dataInStore.allBooks.concat(addedBook) }
+        data: bookDataInStore
       })
-    } 
+    }
+    console.log(bookDataInStore, client)
   }
 
   useSubscription(BOOK_ADDED, {
@@ -79,6 +84,7 @@ const App = () => {
       <Authors
         show={page === 'authors'}
         token={token}
+        updateCache={updateCache}
       />
 
       <Books

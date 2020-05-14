@@ -4,7 +4,7 @@ import Select from 'react-select'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, UPDATE_BIRTHYEAR } from '../queries'
 
-const Authors = ({ show, token }) => {
+const Authors = ({ show, token, updateCache }) => {
   const { loading, data } = useQuery(ALL_AUTHORS)
   const [year, setYear] = useState('')
   const [selectedAuthor, setSelectedAuthor] = useState(null)
