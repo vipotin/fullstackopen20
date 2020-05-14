@@ -4,13 +4,9 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommendations from './components/Recommendations'
-import { useApolloClient } from '@apollo/client'
-
-const App = () => {
-  const [page, setPage] = useState('authors')
-  const [token, setToken] = useState(localStorage.getItem('user-token'))
-  // const [errorMessage, setErrorMessage] = useState(null)
-  const client = useApolloClient()
+import { useApolloClient, useSubscription
+} from '@apollo/client'
+import { BOOK_ADDED, ALL_BOOKS } from './queries'
 
   // const Notify = ({ message }) => {
   //   return(
@@ -19,12 +15,6 @@ const App = () => {
   //     </div>
   //   )
   // }
-
-  const logout = () => {
-    setToken(null)
-    localStorage.clear()
-    client.resetStore()
-  }
 
   // if (!token) {
   //   return (
@@ -39,6 +29,41 @@ const App = () => {
   //     </div>
   //   )
   // }
+
+
+const App = () => {
+  const [page, setPage] = useState('authors')
+  const [token, setToken] = useState(localStorage.getItem('user-token'))
+  // const [errorMessage, setErrorMessage] = useState(null)
+  const client = useApolloClient()
+
+  const updateCache = (addedBook) => {
+    const includedIn = (set, obj) => 
+      set.map(p => p.id).includes(obj.id)
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allPersons : dataInStore.allBooks.concat(addedBook) }
+      })
+    } 
+  }
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const book = subscriptionData.data.bookAdded
+      window.alert(`new book ${book.title} added`)
+      console.log(subscriptionData)
+      updateCache(book)
+    }
+  })
+
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+  }
 
   return (
     <div>
@@ -62,6 +87,7 @@ const App = () => {
 
       <NewBook
         show={token ? page === 'add' : null}
+        updateCache={updateCache}
       />
 
       <Recommendations 
