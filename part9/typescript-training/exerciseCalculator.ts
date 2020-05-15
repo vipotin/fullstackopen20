@@ -1,4 +1,4 @@
-type ExerciseData = {
+interface ExerciseData {
   periodLength: number,
   trainingDays: number,
   success: boolean,
@@ -7,9 +7,31 @@ type ExerciseData = {
   target: number,
   average: number
 }
-type RatingData = {
+interface RatingData {
   rating: number,
   ratingDescription: string
+}
+
+interface UserData {
+  target: number,
+  results: number[]
+}
+
+const parseExerciseArguments = (args: string[]) : UserData => {
+  if (args.length < 4) throw new Error('Arguments are missing');
+  const target = Number(args[2])
+  if (isNaN(target)) {
+    throw new Error('Only numbers are allowed by target');
+  }
+  const onlyResults = args.slice(2);
+  const results = onlyResults.map(input => {
+    if (isNaN(Number(input))) {
+      throw new Error('Only numbers are allowed');
+    }
+    return Number(input);
+  });
+
+  return { target, results };
 }
 
 const calculateRating = (avgTime: number, target: number) : RatingData => {
@@ -48,4 +70,10 @@ const calculateExercises = (exerciseHours: number[], target: number) : ExerciseD
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1] , 2))
+try {
+  const data = parseExerciseArguments(process.argv);
+  const feedback = calculateExercises(data.results, data.target)
+  console.log(feedback)
+} catch (error) {
+    console.log('Error: ', error.message)
+}
