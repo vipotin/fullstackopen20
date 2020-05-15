@@ -42,10 +42,12 @@ const calculateBmi = (height: number, weight: number) : string => {
   }
 }
 
-try {
-  const { height, weight } = parseArguments(process.argv);
-  const bmi = calculateBmi(height, weight);
-  console.log(bmi);
-} catch (error) {
-  console.log('Error: ', error.message);
+export const bmiCalculator = (height: number, weight: number) : string => {
+  try {
+    // const { height, weight } = parseArguments(process.argv);
+    return calculateBmi(Number(height), Number(weight));
+  } catch (error) {
+    console.log('eio onnistunut')
+    throw new Error('Cannot calculate BMI');
+  }
 }
