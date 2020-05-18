@@ -1,23 +1,23 @@
-interface BmiValues {
-  height: number,
-  weight: number
-}
+// interface BmiValues {
+//   height: number;
+//   weight: number;
+// }
 
-const parseArguments = (args: string[]) : BmiValues => {
-  if (args.length < 4) throw new Error('Arguments are missing');
-  if (args.length > 4) throw new Error('Too many arguments');
+// const parseArguments = (args: string[]): BmiValues => {
+//   if (args.length < 4) throw new Error('Arguments are missing');
+//   if (args.length > 4) throw new Error('Too many arguments');
 
-  if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
-    return {
-      height: Number(args[2]),
-      weight: Number(args[3])
-    } 
-  } else {
-      throw new Error('Only numbers are allowed');
-    }
-}
+//   if (!isNaN(Number(args[2])) && !isNaN(Number(args[3]))) {
+//     return {
+//       height: Number(args[2]),
+//       weight: Number(args[3])
+//     };
+//   } else {
+//       throw new Error('Only numbers are allowed');
+//     }
+// };
 
-const calculateBmi = (height: number, weight: number) : string => {
+export const calculateBmi = (height: number, weight: number): string => {
   const bmi: number = weight/((height/100)^2);
 
   switch(true) {
@@ -36,18 +36,17 @@ const calculateBmi = (height: number, weight: number) : string => {
     case (35 <= bmi && bmi < 40):
       return 'Obese Class II (Severely obese)';
     case (bmi >= 40):
-      return 'Obese Class III (Very severely obese)'
+      return 'Obese Class III (Very severely obese)';
     default:
       throw new Error('Calculating bmi failed');
   }
-}
+};
 
-export const bmiCalculator = (height: number, weight: number) : string => {
-  try {
-    // const { height, weight } = parseArguments(process.argv);
-    return calculateBmi(Number(height), Number(weight));
-  } catch (error) {
-    console.log('eio onnistunut')
-    throw new Error('Cannot calculate BMI');
-  }
-}
+// const bmiCalculator = (): string => {
+//   try {
+//     const { height, weight } = parseArguments(process.argv);
+//     return calculateBmi(Number(height), Number(weight));
+//   } catch (error) {
+//     throw new Error('Cannot calculate BMI');
+//   }
+// };
