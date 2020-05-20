@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+    "name": "Testi Taina",
+    "ssn": "592-26-6629",
+    "dateOfBirth": "1985-08-24",
+    "occupation": "Nurse",
+    "gender": "female"
+}
