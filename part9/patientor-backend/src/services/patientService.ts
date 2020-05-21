@@ -5,13 +5,14 @@ import toNewPatient from '../utils';
 // Reformat data
 const newPatientData = patientData.map(obj => {
   const newPatient = toNewPatient(obj) as Patient;
+  newPatient.entries = [];
   newPatient.id = obj.id;
   return newPatient;
 });
 
 const patientsWithoutSSN: PatientNoSensitiveData[] = newPatientData;
 
-const getPatientsWithoutSSN = (): PatientNoSensitiveData[] => {
+const getPatientsWithoutSensitiveData = (): PatientNoSensitiveData[] => {
   return patientsWithoutSSN.map(({ id, name, dateOfBirth, gender, occupation }) => ({
     id,
     name,
@@ -21,9 +22,14 @@ const getPatientsWithoutSSN = (): PatientNoSensitiveData[] => {
   }));
 };
 
+const findPatientWithId = (id: string): Patient | undefined => {
+  return newPatientData.find(p => p.id === id);
+};
+
 const addPatient = (patient: NewPatient): Patient => {
   const newPatient = {
     id: (Math.max(...newPatientData.map(d => Number(d.id))) + 1).toString(),
+    entries: [],
     ...patient
   };
   newPatientData.push(newPatient);
@@ -32,6 +38,7 @@ const addPatient = (patient: NewPatient): Patient => {
 };
 
 export default {
-  getPatientsWithoutSSN,
-  addPatient
+  getPatientsWithoutSensitiveData,
+  addPatient,
+  findPatientWithId
 };
