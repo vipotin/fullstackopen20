@@ -1,5 +1,6 @@
-import { State } from "./state";
+import { State, StateContext } from "./state";
 import { Patient } from "../types";
+import { CommentAction } from "semantic-ui-react";
 
 export type Action =
   | {
@@ -9,7 +10,11 @@ export type Action =
   | {
       type: "ADD_PATIENT";
       payload: Patient;
-    };
+    }
+  | {
+      type: "GET_PATIENT";
+      payload: Patient;
+    }; 
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -31,6 +36,11 @@ export const reducer = (state: State, action: Action): State => {
           ...state.patients,
           [action.payload.id]: action.payload
         }
+      };
+    case "GET_PATIENT":
+      return {
+        ...state,
+        selectedPatient: action.payload
       };
     default:
       return state;
