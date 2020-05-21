@@ -7,7 +7,7 @@ import { Gender } from '../types';
 
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
-import { useStateValue } from "../state";
+import { useStateValue, getPatient } from "../state";
 
 const GenderIcon: React.FC<{ gender: Gender}> = ({ gender }) => {
   switch (gender) {
@@ -32,10 +32,10 @@ const PatientInfoPage: React.FC = () => {
     try {
       const id = params.id;
       if (!selectedPatient || id !== selectedPatient.id) {
-        const { data: newPatient } = await axios.get<Patient>(
+        const { data: foundPatient } = await axios.get<Patient>(
           `${apiBaseUrl}/patients/${id}`
         );
-        dispatch({ type: "GET_PATIENT", payload: newPatient });
+        dispatch(getPatient(foundPatient));
       }
     } catch (e) {
       // console.error(e.response.data);
