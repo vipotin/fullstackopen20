@@ -1,38 +1,35 @@
-import patientData from '../../data/patients.json';
+import patients from '../../data/patients';
 import { PatientNoSensitiveData, Patient, NewPatient } from '../types';
-import toNewPatient from '../utils';
+import { v4 as uuid } from 'uuid';
+
+// import toNewPatient from '../utils';
 
 // Reformat data
-const newPatientData = patientData.map(obj => {
-  const newPatient = toNewPatient(obj) as Patient;
-  newPatient.entries = [];
-  newPatient.id = obj.id;
-  return newPatient;
-});
-
-const patientsWithoutSSN: PatientNoSensitiveData[] = newPatientData;
+// const newPatientData = patients.map(obj => {
+//   const newPatient = toNewPatient(obj) as Patient;
+//   newPatient.entries = [];
+//   newPatient.id = obj.id;
+//   return newPatient;
+// });
 
 const getPatientsWithoutSensitiveData = (): PatientNoSensitiveData[] => {
-  return patientsWithoutSSN.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+  return patients.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
     id,
     name,
     dateOfBirth,
     gender,
     occupation,
+    entries
   }));
 };
 
 const findPatientWithId = (id: string): Patient | undefined => {
-  return newPatientData.find(p => p.id === id);
+  return patients.find(p => p.id === id);
 };
 
 const addPatient = (patient: NewPatient): Patient => {
-  const newPatient = {
-    id: (Math.max(...newPatientData.map(d => Number(d.id))) + 1).toString(),
-    entries: [],
-    ...patient
-  };
-  newPatientData.push(newPatient);
+  const newPatient = { id: uuid(), entries: [], ...patient };
+  patients.push(newPatient);
 
   return newPatient;
 };
