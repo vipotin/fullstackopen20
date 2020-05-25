@@ -3,7 +3,7 @@ import axios from "axios";
 import { Container, Table, Button } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import { Gender, Entry } from '../types';
+import { Gender, Entry, Diagnosis } from '../types';
 
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
@@ -23,7 +23,7 @@ const GenderIcon: React.FC<{ gender: Gender}> = ({ gender }) => {
 };
 
 const PatientInfoPage: React.FC = () => {
-  const [{ selectedPatient }, dispatch] = useStateValue();
+  const [{ selectedPatient, diagnosis }, dispatch] = useStateValue();
   // const [error, setError] = React.useState<string | undefined>();
 
   const params = useParams<{ id: string}>();
@@ -48,6 +48,12 @@ const PatientInfoPage: React.FC = () => {
     // setError(undefined);
   }, []);
 
+  const findDiagnosis = (code: string): string | null => {
+    const foundDiagnosis: Diagnosis | undefined = diagnosis.find(d => d.code === code);
+    return foundDiagnosis ? foundDiagnosis.name : null;
+  };
+  
+
   if (!selectedPatient) return null;
 
   return (
@@ -62,8 +68,8 @@ const PatientInfoPage: React.FC = () => {
         <div key={entry.id}>
           <p>{entry.date} {entry.description}</p>
           <ul>
-            {entry.diagnosisCodes ? entry.diagnosisCodes.map(diagnosis => 
-              <li key={diagnosis}>{diagnosis}</li>
+            {entry.diagnosisCodes ? entry.diagnosisCodes.map(code => 
+              <li key={code}>{code} {findDiagnosis(code)}</li>
             ) : null }
           </ul>
         </div>

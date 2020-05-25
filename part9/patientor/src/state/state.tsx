@@ -1,16 +1,18 @@
 import React, { createContext, useContext, useReducer } from "react";
-import { Patient } from "../types";
+import { Patient, Diagnosis } from "../types";
 
 import { Action } from "./reducer";
 
 export type State = {
   patients: { [id: string]: Patient };
   selectedPatient: Patient | undefined;
+  diagnosis: Diagnosis[];
 };
 
 const initialState: State = {
   patients: {},
-  selectedPatient: undefined
+  selectedPatient: undefined,
+  diagnosis: [] as Diagnosis[]
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([
@@ -35,6 +37,13 @@ export const StateProvider: React.FC<StateProviderProps> = ({
   );
 };
 export const useStateValue = () => useContext(StateContext);
+
+export const setDiagnosis = (data: Diagnosis[]): Action => {
+  return {
+    type: "SET_DIAGNOSIS",
+    payload: data
+  };
+};
 
 export const setPatientList = (data: Patient[]): Action => {
   return {
