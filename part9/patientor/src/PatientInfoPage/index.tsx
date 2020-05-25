@@ -3,7 +3,7 @@ import axios from "axios";
 import { Container, Table, Button } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import { Gender } from '../types';
+import { Gender, Entry } from '../types';
 
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
@@ -57,6 +57,17 @@ const PatientInfoPage: React.FC = () => {
         ssn: {selectedPatient.ssn}
         <br></br>occupation: {selectedPatient.occupation}
       </p>
+      <h4>entries</h4>
+      {selectedPatient.entries.map(entry => 
+        <div key={entry.id}>
+          <p>{entry.date} {entry.description}</p>
+          <ul>
+            {entry.diagnosisCodes ? entry.diagnosisCodes.map(diagnosis => 
+              <li key={diagnosis}>{diagnosis}</li>
+            ) : null }
+          </ul>
+        </div>
+        )}
     </div>
   );
 };
