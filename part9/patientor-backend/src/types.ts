@@ -25,12 +25,12 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
-interface Discharge {
+export interface Discharge {
   date: string;
   criteria: string;
 }
 
-interface StartEndDate {
+export interface StartEndDate {
   startDate: string;
   endDate: string;
 }
@@ -64,6 +64,15 @@ export interface Patient {
 export type PublicPatient = Omit<Patient, 'ssn' | 'entries' >;
 
 export type NewPatient = Omit<Patient, 'id'>;
+
+export type NewBaseEntry = Omit<BaseEntry, 'id'>;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;
+
+export type NewEntry = DistributiveOmit<Entry, 'id'>;
 
 export interface PatientNoSensitiveData {
   id: string;
