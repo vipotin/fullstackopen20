@@ -1,5 +1,5 @@
 import { State, StateContext } from "./state";
-import { Patient, Diagnosis } from "../types";
+import { Patient, Diagnosis, Entry } from "../types";
 import { CommentAction } from "semantic-ui-react";
 
 export type Action =
@@ -18,6 +18,10 @@ export type Action =
   | {
     type: "SET_DIAGNOSIS";
     payload: Diagnosis[];
+  }
+  | {
+    type: "ADD_ENTRY";
+    payload: Patient;
   }; 
 
 export const reducer = (state: State, action: Action): State => {
@@ -49,7 +53,17 @@ export const reducer = (state: State, action: Action): State => {
     case "SET_DIAGNOSIS":
       return {
         ...state,
-        diagnosis: action.payload
+        diagnoses: action.payload
+      };
+    case "ADD_ENTRY":
+      console.log(action.payload);
+      return {
+        ...state,
+        patients: {
+          ...state.patients,
+          [action.payload.id]: action.payload
+        },
+        selectedPatient: action.payload
       };
     default:
       return state;

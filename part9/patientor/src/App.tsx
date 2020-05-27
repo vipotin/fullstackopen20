@@ -8,7 +8,7 @@ import { useStateValue, setPatientList, setDiagnosis } from "./state";
 import { Patient, Diagnosis } from "./types";
 
 import PatientListPage from "./PatientListPage";
-import PatientInfoPage from "./PatientInfoPage";
+import { PatientInfoPage } from "./PatientInfoPage";
 
 const App: React.FC = () => {
   const [, dispatch] = useStateValue();

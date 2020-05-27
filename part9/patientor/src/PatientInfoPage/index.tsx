@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Table, Button, CardContent } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
+import { Modal, Segment } from 'semantic-ui-react';
 import { Icon, Card } from 'semantic-ui-react';
 import { Gender, Entry, Diagnosis, HealthCheckRating } from '../types';
 import HealthRatingBar from '../components/HealthRatingBar';
 
 import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
-import { useStateValue, getPatient } from "../state";
+import { useStateValue, getPatient, addPatient, addEntry } from "../state";
 import { assertNever } from "../utils";
+import { AddEntryForm, EntryFormValues } from "./AddEntryForm";
 
 const GenderIcon: React.FC<{ gender: Gender}> = ({ gender }) => {
   switch (gender) {
@@ -24,11 +26,35 @@ const GenderIcon: React.FC<{ gender: Gender}> = ({ gender }) => {
   }
 };
 
-const PatientInfoPage: React.FC = () => {
+export const PatientInfoPage: React.FC = () => {
   const [{ selectedPatient }, dispatch] = useStateValue();
   // const [error, setError] = React.useState<string | undefined>();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
 
-  const params = useParams<{ id: string}>();
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
+
+  const params = useParams<{ id: string }>();
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const id = params.id;
+      const { data: patientWithNewEntry } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        values
+      );
+      dispatch(addEntry(patientWithNewEntry));
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
+    }
+  };
 
   const getPatientData = async () => {
     try {
@@ -76,6 +102,13 @@ const PatientInfoPage: React.FC = () => {
         // </div>
         <EntryDetails key={entry.id} entry={entry} />
         )}
+        <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button onClick={() => openModal()}>Add New Entry</Button>
     </div>
   );
 };
@@ -148,4 +181,20 @@ const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
   }
 };
 
-export default PatientInfoPage;
+interface Props {
+  modalOpen: boolean;
+  onClose: () => void;
+  onSubmit: (values: EntryFormValues) => void;
+  error?: string;
+}
+
+export const AddEntryModal = ({ modalOpen, onClose, onSubmit, error }: Props) => (
+  <Modal open={modalOpen} onClose={onClose} centered={false} closeIcon>
+    <Modal.Header>Add a new entry</Modal.Header>
+    <Modal.Content>
+      {error && <Segment inverted color="red">{`Error: ${error}`}</Segment>}
+      <AddEntryForm onSubmit={onSubmit} onCancel={onClose} />
+    </Modal.Content>
+  </Modal>
+);
+
