@@ -36,7 +36,6 @@ const isEntry = (param: any): param is string => {
 };
 
 const isHealthCheckRating = (param: any): param is HealthCheckRating => {
-  console.log(param);
   return Object.values(HealthCheckRating).includes(param);
 };
 
@@ -101,7 +100,7 @@ const parseType = (type: any): string => {
 };
 
 const parseDiagnosisCodes = (array: any): Array<Diagnosis['code']> => {
-  if (!array.isArray() || !isArrayofString(array) ) {
+  if (!array || !isArrayofString(array) ) {
     throw new Error(`Incorrect or missing diagnosis codes: ${array}`);
   }
 
@@ -109,7 +108,6 @@ const parseDiagnosisCodes = (array: any): Array<Diagnosis['code']> => {
 };
 
 const parseHealthCheckRating = (rating: any): HealthCheckRating => {
-  console.log(rating)
   if (!isHealthCheckRating(rating) ) {
     throw new Error(`Incorrect or missing health check rating: ${rating}`);
   }
@@ -168,7 +166,6 @@ const toNewBaseEntry = (object: Entry): NewBaseEntry => {
 
 export const toNewEntry = (object: any): NewEntry => {
   const newBase = toNewBaseEntry(object) as NewEntry;
-  console.log(newBase);
 
   const type: string = parseType(object.type);
 
@@ -196,7 +193,9 @@ export const toNewEntry = (object: any): NewEntry => {
       };
       return newOccupationalHealthcareEntry;
 
-    // default:
-    //   return assertNever(newBase);
+    default:
+      throw new Error(
+        `Unhandled discriminated union member: ${JSON.stringify(type)}`
+      );
   }
 };
