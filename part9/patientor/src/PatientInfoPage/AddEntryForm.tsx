@@ -5,6 +5,7 @@ import { Field, Formik, Form } from "formik";
 import { Entry, Diagnosis } from "../types";
 import { useStateValue } from "../state";
 import { DiagnosisSelection, NumberField, TextField } from "../AddPatientModal/FormField";
+import {  } from "../utils";
 
 export type EntryFormValues = Omit<Entry, "id" | "entries">;
 
@@ -15,6 +16,10 @@ interface Props {
 
 export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
   const [{ diagnoses }] = useStateValue();
+
+  const dateFormatRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+  const specialistRegex = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+  const diagnosisCodesRegex = /[0123]/;
 
   return (
     <Formik
@@ -28,7 +33,9 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
     onSubmit={onSubmit}
     validate={values => {
       const requiredError = "Field is required";
+      const formatError = "Invalid field";
         const errors: { [field: string]: string } = {};
+        // Required errors
         if (!values.description) {
           errors.description = requiredError;
         }
@@ -41,8 +48,16 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         if (!values.type) {
           errors.type = requiredError;
         }
-        if (!values.diagnosisCodes) {
-          errors.diagnosisCodes = requiredError;
+
+        // Format errors
+        if (!dateFormatRegex.test(values.date)) {
+          errors.date = formatError;
+        }
+        if (!specialistRegex.test(values.specialist)) {
+          errors.specialist= formatError;
+        }
+        if (values.diagnosisCodes && values.diagnosisCodes.some(code => !diagnosisCodesRegex.test(code))) {
+          errors.diagnosisCodes= formatError;
         }
         return errors;
     }}
