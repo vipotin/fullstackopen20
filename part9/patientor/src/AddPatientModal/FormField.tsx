@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
-import { Diagnosis, Gender } from "../types";
+import { Diagnosis, Gender, EntryType,  } from "../types";
 
 // structure of a single option
 export type GenderOption = {
@@ -70,6 +70,55 @@ export const NumberField: React.FC<NumberProps> = ({ field, label, min, max }) =
     <div style={{ color:'red' }}>
       <ErrorMessage name={field.name} />
     </div>
+  </Form.Field>
+);
+
+export type EntryTypeOption = {
+  value: EntryType;
+  label: string;
+};
+
+type SelectEntryTypeProps = {
+  name: string;
+  label: string;
+  options: EntryTypeOption[];
+};
+
+interface DischargeProps {
+  date: string;
+  criteria: string;
+}
+
+// export const DischargeFields: React.FC<DischargeProps> = ({
+//   name,
+//   label
+// }: DischargeProps) => (
+//   <Form.Field>
+//     <label>{label}</label>
+//     <Field as="select" name={name} className="ui dropdown">
+//         {options.map(option => (
+//           <option key={option.value} value={option.value}>
+//             {option.label || option.value}
+//           </option>
+//         ))}
+//     </Field>
+//   </Form.Field>
+// );
+
+export const SelectEntryType: React.FC<SelectEntryTypeProps> = ({
+  name,
+  label,
+  options
+}: SelectEntryTypeProps) => (
+  <Form.Field>
+    <label>{label}</label>
+    <Field as="select" name={name} className="ui dropdown">
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label || option.value}
+          </option>
+        ))}
+    </Field>
   </Form.Field>
 );
 
