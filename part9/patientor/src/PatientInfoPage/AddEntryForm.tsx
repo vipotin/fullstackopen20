@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Grid, Button, Label } from "semantic-ui-react";
-import { Field, Formik, Form } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 
 import { Entry, EntryType, Diagnosis, BaseEntry } from "../types";
 import { useStateValue } from "../state";
@@ -8,8 +8,8 @@ import { DiagnosisSelection, NumberField, TextField, SelectEntryType, EntryTypeO
 import {  } from "../utils";
 
 
-const dateFormatRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
-const specialistRegex = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+const dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+const nameRegex = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
 const diagnosisCodesRegex = /[0123]/;
 
 // export type EntryFormValues = Omit<Entry, "id" | "entries">;
@@ -56,6 +56,7 @@ const OccupationalHealthcareEntryFields: React.FC = () => {
       <p><b>Sickleave</b></p>
       <Grid>
         <Grid.Column width={8}>
+
         <Field
               label="Start date"
               placeholder="YYYY-MM-DD"
@@ -72,6 +73,7 @@ const OccupationalHealthcareEntryFields: React.FC = () => {
             />
         </Grid.Column>
       </Grid>
+      <ErrorMessage name="sickLeave" />
     </div>
   );
 };
@@ -98,6 +100,7 @@ const HospitalEntryFields: React.FC = () => {
             />
         </Grid.Column>
       </Grid>
+      <ErrorMessage name="discharge" />
     </div>
   );
 };
@@ -109,7 +112,6 @@ const validateBaseEntryFormValues = (values: EntryFormValues): { [field: string]
   const errors: { [field: string]: string } = {};
   // Required errors
   if (!values.description) {
-    console.log('description')
     errors.description = requiredError;
   }
   if (!values.date) {
@@ -121,8 +123,20 @@ const validateBaseEntryFormValues = (values: EntryFormValues): { [field: string]
   if (!values.type) {
     errors.type = requiredError;
   }
-  if (!dateFormatRegex.test(values.date)) {
+
+  // Format errors
+  if (!dateRegex.test(values.date)) {
     errors.date = formatError;
+  }
+
+  if (!nameRegex.test(values.specialist)) {
+    errors.specialist = formatError;
+  }
+
+  if (values.diagnosisCodes) {
+    if (values.diagnosisCodes.some(code => !diagnosisCodesRegex.test(code))) {
+      errors.diagnosisCodes = formatError;
+    }
   }
 
   return errors;
@@ -138,19 +152,17 @@ const validateFormValues = (values: EntryFormValues): { [field: string]: string 
     if (!values.employerName) {
       errors.employerName = requiredError;
     }
+    if (!nameRegex.test(values.employerName)) {
+      errors.employerName = formatError;
+    }
+    if (values.sickLeave && (!dateRegex.test(values.sickLeave.startDate) || !dateRegex.test(values.sickLeave.startDate))) {
+      errors.sickLeave = "Invalid start or end date";
+    }
   }
-  
-  //   // Does not work!
-  //   if (values.sickLeave) {
-  //     if(!dateFormatRegex.test(values.sickLeave.startDate) || !dateFormatRegex.test(values.sickLeave.endDate)) {
-  //       errors.sickLeave = formatError;
-  //     }
-  //   }
-  // }
 
   if (values.type === "Hospital") {
-    if (!values.discharge.date) {
-      errors.discharge = requiredError;
+    if (!values.discharge.date || !values.discharge.criteria) {
+      errors.discharge = "Date and criteria are required";
     }
   }
 
