@@ -45,7 +45,7 @@ export const TextField: React.FC<TextProps> = ({
 }) => (
   <Form.Field>
     <label>{label}</label>
-    <Field placeholder={placeholder} {...field} />
+    <Field placeholder={placeholder} value={field.value || ""} {...field} />
     <div style={{ color:'red' }}>
       <ErrorMessage name={field.name} />
     </div>
@@ -112,7 +112,7 @@ export const SelectEntryType: React.FC<SelectEntryTypeProps> = ({
 }: SelectEntryTypeProps) => (
   <Form.Field>
     <label>{label}</label>
-    <Field as="select" name={name} className="ui dropdown">
+    <Field as="select" name={name} className="ui dropdown" >
         {options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label || option.value}

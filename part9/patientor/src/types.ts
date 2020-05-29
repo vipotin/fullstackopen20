@@ -46,7 +46,7 @@ interface StartEndDate {
   endDate: string;
 }
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: Discharge;
 }

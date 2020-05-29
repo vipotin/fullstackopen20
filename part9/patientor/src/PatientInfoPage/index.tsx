@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
-import { Container, Table, Button, CardContent } from "semantic-ui-react";
+import { Button, CardContent } from "semantic-ui-react";
 import { useParams } from 'react-router-dom';
 import { Modal, Segment } from 'semantic-ui-react';
 import { Icon, Card } from 'semantic-ui-react';
-import { Gender, Entry, Diagnosis, HealthCheckRating } from '../types';
-import HealthRatingBar from '../components/HealthRatingBar';
+import { Gender } from '../types';
 
-import { Patient } from "../types";
+import { Patient, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
-import { useStateValue, getPatient, addPatient, addEntry } from "../state";
+import { useStateValue, getPatient, addEntry } from "../state";
 import { assertNever } from "../utils";
 import { AddEntryForm, EntryFormValues } from "./AddEntryForm";
 

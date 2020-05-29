@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Grid, Button, Label } from "semantic-ui-react";
+import React from "react";
+import { Grid, Button } from "semantic-ui-react";
 import { Field, Formik, Form, ErrorMessage } from "formik";
 
-import { Entry, EntryType, Diagnosis, BaseEntry } from "../types";
+import { Entry, EntryType, HealthCheckRating } from "../types";
 import { useStateValue } from "../state";
 import { DiagnosisSelection, NumberField, TextField, SelectEntryType, EntryTypeOption } from "../AddPatientModal/FormField";
 import {  } from "../utils";
@@ -13,6 +13,7 @@ const nameRegex = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
 const diagnosisCodesRegex = /[0123]/;
 
 // export type EntryFormValues = Omit<Entry, "id" | "entries">;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DistributiveOmit<T, K extends keyof any> = T extends any
   ? Omit<T, K>
   : never;
@@ -73,7 +74,9 @@ const OccupationalHealthcareEntryFields: React.FC = () => {
             />
         </Grid.Column>
       </Grid>
-      <ErrorMessage name="sickLeave" />
+      <div style={{ color:'red' }}>
+        <ErrorMessage name="sickLeave" />
+      </div>  
     </div>
   );
 };
@@ -100,7 +103,9 @@ const HospitalEntryFields: React.FC = () => {
             />
         </Grid.Column>
       </Grid>
-      <ErrorMessage name="discharge" />
+      <div style={{ color:'red' }}>
+        <ErrorMessage name="discharge" />
+      </div> 
     </div>
   );
 };
@@ -170,6 +175,9 @@ const validateFormValues = (values: EntryFormValues): { [field: string]: string 
     if (!values.healthCheckRating) {
       errors.healthCheckRating = requiredError;
     }
+    if (!Object.values(HealthCheckRating).includes(values.healthCheckRating)) {
+      errors.healthCheckRating = "Choose a value between 0 and 3";
+    }
   }
   return errors;
 };
@@ -179,13 +187,14 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
 
   return (
     <Formik
+    enableReinitialize={true}
     initialValues={{
       description: "",
       date: "",
       specialist: "",
       diagnosisCodes: [],
       type: "Hospital",
-      discharge: { date: "", criteria: "" }
+      discharge: { date: "", criteria: "" },
     }}
     onSubmit={onSubmit}
     validate={values => validateFormValues(values)}
@@ -222,11 +231,11 @@ export const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
               component={TextField}
             />
 
-          <DiagnosisSelection
-            setFieldValue={setFieldValue}
-            setFieldTouched={setFieldTouched}
-            diagnoses={Object.values(diagnoses)}
-          />      
+            <DiagnosisSelection
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              diagnoses={Object.values(diagnoses)}
+            />      
 
         {/* Entry type specific fields */}
         {values.type === "HealthCheck" && <HealthCheckEntryFields />}

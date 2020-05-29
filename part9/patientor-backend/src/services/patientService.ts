@@ -1,5 +1,5 @@
 import patients from '../../data/patients';
-import { PatientNoSensitiveData, Patient, NewPatient, Entry, NewEntry } from '../types';
+import { PatientNoSensitiveData, Patient, NewPatient, NewEntry } from '../types';
 import { v4 as uuid } from 'uuid';
 
 // import toNewPatient from '../utils';
@@ -33,7 +33,6 @@ const addEntry = (id: string, entry: NewEntry): Patient | undefined => {
   if (patient) {
     const updatedPatient = { ...patient, entries: patient.entries.concat(newEntry) };
     patient.entries.concat(newEntry);
-    console.log(updatedPatient)
     patients.map(p => p.id === id ? updatedPatient : p);
     return updatedPatient;
   }

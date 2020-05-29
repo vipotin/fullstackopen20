@@ -1,6 +1,5 @@
-import { State, StateContext } from "./state";
-import { Patient, Diagnosis, Entry } from "../types";
-import { CommentAction } from "semantic-ui-react";
+import { State } from "./state";
+import { Patient, Diagnosis } from "../types";
 
 export type Action =
   | {
@@ -56,7 +55,6 @@ export const reducer = (state: State, action: Action): State => {
         diagnoses: action.payload
       };
     case "ADD_ENTRY":
-      console.log(action.payload);
       return {
         ...state,
         patients: {
